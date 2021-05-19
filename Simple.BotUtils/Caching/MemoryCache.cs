@@ -54,7 +54,6 @@ namespace Simple.BotUtils.Caching
             return value;
         }
 
-
         public object GetOrAdd(string key, CacheOptions options)
         {
             if (!items.ContainsKey(key)) Add(key, options);
