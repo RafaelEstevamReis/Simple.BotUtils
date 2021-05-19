@@ -48,6 +48,25 @@ namespace Simple.BotUtils.Caching
             if (!TryGet<T>(key, out T value)) throw new Exception("Cache expired");
             return value;
         }
+        public object Get(string key)
+        {
+            if (!TryGet(key, out object value)) throw new Exception("Cache expired");
+            return value;
+        }
+
+
+        public object GetOrAdd(string key, CacheOptions options)
+        {
+            if (!items.ContainsKey(key)) Add(key, options);
+
+            return Get(key);
+        }
+        public T GetOrAdd<T>(string key, CacheOptions options)
+        {
+            if (!items.ContainsKey(key)) Add(key, options);
+
+            return Get<T>(key);
+        }
 
         public void Invalidate(string key)
         {
