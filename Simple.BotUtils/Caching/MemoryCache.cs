@@ -34,7 +34,6 @@ namespace Simple.BotUtils.Caching
             value = item.Retrieve();
             return true;
         }
-
         public bool TryGet<T>(string key, out T value)
         {
             value = default;
@@ -42,6 +41,12 @@ namespace Simple.BotUtils.Caching
 
             value = (T)obj;
             return true;
+        }
+
+        public T Get<T>(string key)
+        {
+            if (!TryGet<T>(key, out T value)) throw new Exception("Cache expired");
+            return value;
         }
 
         public void Invalidate(string key)
