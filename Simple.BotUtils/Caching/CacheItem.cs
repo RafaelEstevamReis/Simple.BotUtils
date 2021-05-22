@@ -45,7 +45,7 @@ namespace Simple.BotUtils.Caching
             canBeUsed = false;
         }
 
-        public bool Expired => ExpiresOn > DateTime.Now;
+        public bool Expired => ExpiresOn < DateTime.Now;
 
         public object Retrieve()
         {
@@ -78,7 +78,7 @@ namespace Simple.BotUtils.Caching
         {
             if (CreationOptions.UpdateCallback == null) return;
 
-            currentValue = CreationOptions.UpdateCallback;
+            currentValue = CreationOptions.UpdateCallback();
             LastUpdate = DateTime.Now;
             canBeUsed = true;
         }
