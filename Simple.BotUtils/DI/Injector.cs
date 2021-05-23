@@ -12,7 +12,9 @@ namespace Simple.BotUtils.DI
         }
 
         public static void AddSingleton(Type t, object instance) => Add(t, instance, null, InjectionType.Singleton);
+        public static void AddSingleton<T>(T instance) => Add(typeof(T), instance, null, InjectionType.Singleton);
         public static void AddTransient(Type t, Func<object> constructor) => Add(t, null, constructor, InjectionType.Transient);
+        public static void AddTransient<T>(Func<T> constructor) => Add(typeof(T), null, () => constructor, InjectionType.Transient);
         public static void Add(Type t, object instance, Func<object> transientConstructor, InjectionType injectionType)
         {
             dicTypes[t] = new InjectedObject()
@@ -30,7 +32,7 @@ namespace Simple.BotUtils.DI
 
             if (info.InjectionType == InjectionType.Transient)
             {
-                obj = info.Constructor(); 
+                obj = info.Constructor();
             }
             else if (info.InjectionType == InjectionType.Singleton)
             {
