@@ -25,12 +25,12 @@ namespace Simple.BotUtils.Data
             value = Load<T>(fs);
             return true;
         }
-        public static T LoadOrCreate<T>(string fileName, T defaultValue)
+        public static T LoadOrCreate<T>(string fileName, T template)
         {
             if (TryLoadFile(fileName, out T value)) return value;
 
-            ToFile(fileName, defaultValue);
-            return defaultValue;
+            ToFile(fileName, template);
+            return template;
         }
         public static T FromFile<T>(string fileName)
         {
