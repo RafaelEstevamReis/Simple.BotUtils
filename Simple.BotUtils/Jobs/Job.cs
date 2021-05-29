@@ -3,27 +3,12 @@ using System.Threading.Tasks;
 
 namespace Simple.BotUtils.Jobs
 {
-    public class Job : IJob
+    public abstract class Job : IJob
     {
-        protected Job() { }
-        public Job(Action<ExecutionTrigger, object> runAction,
-                   bool runOnStartUp = false,
-                   TimeSpan? startEvery = null,
-                   bool canBeInvoked = false)
+        protected Job() { RunAction = null; }
+        protected Job(Action<ExecutionTrigger, object> runAction)
         {
-            RunAction = runAction ?? throw new ArgumentNullException(nameof(runAction));
-
-            CanBeInvoked = canBeInvoked;
-            RunOnStartUp = runOnStartUp;
-            if (startEvery.HasValue)
-            {
-                CanBeScheduled = true;
-                StartEvery = startEvery.Value;
-            }
-            else
-            {
-                CanBeScheduled = false;
-            }
+            RunAction = runAction;
         }
 
         public bool CanBeInvoked { get; set; }
@@ -36,11 +21,13 @@ namespace Simple.BotUtils.Jobs
 #if NET40
         public virtual Task ExecuteAsync(ExecutionTrigger trigger, object parameter)
         {
+            if (RunAction == null) throw new Exception("You must either supply a RunAction or Override ExecuteAsync");
             return Task.Factory.StartNew(() => RunAction(trigger, parameter));
         }
 #else
         public virtual async Task ExecuteAsync(ExecutionTrigger trigger, object parameter)
         {
+            if (RunAction == null) throw new Exception("You must either supply a RunAction or Override ExecuteAsync");
             await Task.Run(() => RunAction(trigger, parameter));
         }
 #endif
