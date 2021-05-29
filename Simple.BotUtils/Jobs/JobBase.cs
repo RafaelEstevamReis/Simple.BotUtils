@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 
 namespace Simple.BotUtils.Jobs
 {
-    public abstract class Job : IJob
+    public abstract class JobBase : IJob
     {
-        protected Job() { RunAction = null; }
-        protected Job(Action<ExecutionTrigger, object> runAction)
+        protected JobBase() { RunAction = null; }
+        protected JobBase(Action<ExecutionTrigger, object> runAction)
         {
             RunAction = runAction;
         }
