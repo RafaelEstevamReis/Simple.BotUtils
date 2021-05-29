@@ -30,8 +30,10 @@ namespace Simple.BotUtils.Jobs
 
         public int JobCount => jobs.Count;
 
+        bool hasStartExecuted;
         public void RunStartJobs()
         {
+            hasStartExecuted = true;
             foreach (var v in jobs.Values)
             {
                 if (!v.CanRun) continue;
@@ -41,6 +43,7 @@ namespace Simple.BotUtils.Jobs
                 v.LastExecution = DateTime.Now;
             }
         }
+
         [Obsolete("Use RunTimedJobs instead")]
         public void RunTimedJob() => RunTimedJobs();
         public void RunTimedJobs()
@@ -76,6 +79,8 @@ namespace Simple.BotUtils.Jobs
         /// </summary>
         public void RunJobsSynchronously(CancellationToken token)
         {
+            if (!hasStartExecuted) RunStartJobs();
+
             while (true)
             {
                 int timeDelaySeconds = 10; // 10s
