@@ -77,8 +77,17 @@ namespace Simple.BotUtils.Jobs
         public void RunJobsSynchronously(CancellationToken token)
         {
             while (true)
-            {   
-                Task.Delay(10_000, token).Wait(); // 10s
+            {
+                int timeDelaySeconds = 10; // 10s
+#if NET40
+                for (int i = 0; i < timeDelaySeconds; i++)
+                {
+                    Thread.Sleep(1000);
+                    if (token.IsCancellationRequested) break;
+                }
+#else
+                Task.Delay(timeDelaySeconds * 10, token).Wait();
+#endif
                 if (token.IsCancellationRequested) break;
                 RunTimedJobs();
             }
