@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Simple.BotUtils.Jobs
 {
-    internal    class JobInfo
+    public class JobInfo
     {
         public IJob SchedulerJob { get; set; }
         public Task SystemTask { get; set; }

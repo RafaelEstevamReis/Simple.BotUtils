@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Simple.BotUtils.Jobs
 {
@@ -39,7 +41,9 @@ namespace Simple.BotUtils.Jobs
                 v.LastExecution = DateTime.Now;
             }
         }
-        public void RunTimedJob()
+        [Obsolete("Use RunTimedJobs instead")]
+        public void RunTimedJob() => RunTimedJobs();
+        public void RunTimedJobs()
         {
             foreach (var v in jobs.Values)
             {
@@ -56,16 +60,41 @@ namespace Simple.BotUtils.Jobs
         public bool RunJob<T>(object parameter)
         {
             var t = typeof(T);
-            if (jobs.TryGetValue(t, out JobInfo info))
-            {
-                if (!info.CanRun) return false;
-                if (!info.SchedulerJob.CanBeInvoked) return false;
+            if (!jobs.TryGetValue(t, out JobInfo info)) return false;
 
-                info.SystemTask = info.SchedulerJob.ExecuteAsync(ExecutionTrigger.Invoked, parameter);
-                info.LastExecution = DateTime.Now;
+
+            if (!info.CanRun) return false;
+            if (!info.SchedulerJob.CanBeInvoked) return false;
+
+            info.SystemTask = info.SchedulerJob.ExecuteAsync(ExecutionTrigger.Invoked, parameter);
+            info.LastExecution = DateTime.Now;
+
+            return true;
+        }
+        /// <summary>
+        /// Runs Synchronously calling RunTimedJobs() every 10 seconds
+        /// </summary>
+        public void RunJobsSynchronously(CancellationToken token)
+        {
+            while (true)
+            {   
+                Task.Delay(10_000, token).Wait(); // 10s
+                if (token.IsCancellationRequested) break;
+                RunTimedJobs();
             }
-            return false;
         }
 
+        public JobInfo GetJobInfo<T>()
+        {
+            var t = typeof(T);
+            if (!jobs.TryGetValue(t, out JobInfo info)) return null;
+            // Make a copy
+            return new JobInfo()
+            {
+                LastExecution = info.LastExecution,
+                SchedulerJob = info.SchedulerJob,
+                SystemTask = info.SystemTask
+            };
+        }
     }
 }
