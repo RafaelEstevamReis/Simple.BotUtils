@@ -1,4 +1,4 @@
-﻿#if !NETSTANDARD1_1
+﻿#if !NETSTANDARD1_0
 namespace Simple.BotUtils.Data
 {
     public abstract class ConfigBase

@@ -1,4 +1,4 @@
-﻿#if !NETSTANDARD1_1
+﻿#if !NETSTANDARD1_0
 using System.IO;
 
 namespace Simple.BotUtils.Data
