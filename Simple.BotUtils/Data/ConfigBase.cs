@@ -1,4 +1,5 @@
-﻿namespace Simple.BotUtils.Data
+﻿#if !NETSTANDARD1_1
+namespace Simple.BotUtils.Data
 {
     public abstract class ConfigBase
     {
@@ -21,3 +22,4 @@
         }
     }
 }
+#endif
