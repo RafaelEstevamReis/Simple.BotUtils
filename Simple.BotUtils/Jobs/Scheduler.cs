@@ -56,7 +56,7 @@ namespace Simple.BotUtils.Jobs
                 var time = DateTime.Now - v.LastExecution;
                 if (time < v.SchedulerJob.StartEvery) continue;
 
-                v.SystemTask = v.SchedulerJob.ExecuteAsync(ExecutionTrigger.Startup, null);
+                v.SystemTask = v.SchedulerJob.ExecuteAsync(ExecutionTrigger.Scheduled, null);
                 v.LastExecution = DateTime.Now;
             }
         }
