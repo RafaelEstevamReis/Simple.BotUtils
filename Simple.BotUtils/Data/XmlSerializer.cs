@@ -16,6 +16,22 @@ namespace Simple.BotUtils.Data
             serializer.Serialize(source, obj);
         }
 
+        public static bool TryLoadFile<T>(string fileName, out T value)
+        {
+            value = default;
+            if (!File.Exists(fileName)) return false;
+
+            using FileStream fs = new FileStream(fileName, FileMode.Open);
+            value = Load<T>(fs);
+            return true;
+        }
+        public static T LoadOrCreate<T>(string fileName, T defaultValue)
+        {
+            if (TryLoadFile(fileName, out T value)) return value;
+
+            ToFile(fileName, defaultValue);
+            return defaultValue;
+        }
         public static T FromFile<T>(string fileName)
         {
             using FileStream fs = new FileStream(fileName, FileMode.Open);
