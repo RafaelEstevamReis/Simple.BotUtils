@@ -3,22 +3,25 @@ namespace Simple.BotUtils.Data
 {
     public abstract class ConfigBase
     {
-        public void Save(string filePath) => XmlSerializer.ToFile(filePath, this);
+        protected virtual string FilePath { get; set; }
+
+        public void Save<T>()
+             where T : ConfigBase, new()
+            => SaveTo<T>(FilePath);
+        public void SaveTo<T>(string filePath)
+              where T : ConfigBase, new()
+            => XmlSerializer.ToFile<T>(filePath, (T)this);
 
         public static T Load<T>(string FilePath)
-            where T : ConfigBase
-        {
-            return XmlSerializer.FromFile<T>(FilePath);
-        }
-        public static T LoadOrCreate<T>(string FilePath)
             where T : ConfigBase, new()
-        {
-            return XmlSerializer.LoadOrCreate<T>(FilePath, new T());
-        }
-        public static T LoadOrCreate<T>(string FilePath, T template) 
+            => Load<T>(FilePath, new T());
+
+        public static T Load<T>(string FilePath, T template)
             where T : ConfigBase
         {
-            return XmlSerializer.LoadOrCreate<T>(FilePath, template);
+            var obj = XmlSerializer.LoadOrCreate<T>(FilePath, template);
+            obj.FilePath = FilePath;
+            return obj;
         }
     }
 }
