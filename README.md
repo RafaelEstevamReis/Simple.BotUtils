@@ -8,15 +8,16 @@
   - [Command-Line parser](#command-line-parser)
   - [Job/Task Scheduler](#jobtask-scheduler)
   - [Memory Caching](#memory-caching)
-  - [Xml Serializer](#xml-serializer)
+  - [Xml and Json Serialization](#xml-and-json-serialization)
+    - [XmlSerializer](#xmlserializer)
+    - [JsonSerializer](#jsonserializer)
   - [Sample project](#sample-project)
 
 # Simple.BotUtils
 
 Some Bots Utilities containing common features such as Dependency Injection, Job Scheduler and Argument Parser
 
-Lightweight, simple, compatible, and has no other dependencies
-
+Lightweight, simple, compatible, and depends only Newtonsoft.Json
 Works for small projects in any platform (see compatibility list)
 
 ## Compatibility List:
@@ -25,7 +26,7 @@ Direct targets:
 * Net Core 3.1, and 2.1
 * Net Standard 1.0*, and 2.0
 * Net 5
-* Net Framework 4.0, 4.5, 4.6, 4.7.2, and 4.8
+* Net Framework 4.0, 4.5, 4.6.1, 4.7.2, and 4.8
   
 Indirect Support from Net Standard 2.0:
 * Net Core 2.0+
@@ -69,18 +70,38 @@ Retrieve a new instance for each use
 
 ## Command-Line parser
 
-A simple argument parser
+A simple parser for program arguments
+
+Allows access and selection with an Argument object, a dictionary or a NameValueCollection
+
+Is also possible to map the arguments to an Object/Class
 
 ~~~C#
+  // argument access
   public static void Main(string[] args)
   {
-      // app.exe -a AA --bb BBBB cccc
-      var arguments = ArgumentParser.Parse(args);
-      ...
-      var a = arguments.Get("-a"); // "AA"
-      var bb = arguments.Get("--bb"); // "BBBB"
-      var empty = arguments.Get(""); // "cccc"
-      // Only one [Empty] is allowed
+    // app.exe -a AA --bb BBBB cccc
+    var arguments = ArgumentParser.Parse(args);
+    ...
+    var a = arguments.Get("-a"); // "AA"
+    var bb = arguments.Get("--bb"); // "BBBB"
+    // Only one [Empty/""] is allowed
+    var empty = arguments.Get(""); // "cccc"
+  }
+~~~
+
+~~~C#
+  // fill a class with arguments
+  public static void Main(string[] args)
+  { 
+    // app.exe -n Name --number 12345
+    var data = Startup.ArgumentParser.ParseAs<MyData>(args);
+  }
+  class MyData{
+    [Startup.ArgumentKey("-n", "--name")]
+    public string MyName { get; set; }
+    [Startup.ArgumentKey("-nb", "--number")]
+    public int MyInt { get; set; }
   }
 ~~~
 
@@ -135,29 +156,37 @@ A simple and versatile Memory Caching class, supports renew based on LastAccess 
   var data = cache.Get<Data[]>("cache-key");
 ~~~
 
-## Xml Serializer
-
-A Static class wrapped around .Net native XmlSerializer to load and save objects in Xml Files
+## Xml and Json Serialization
 
 *Not available in Net Standard 1.0*
+
+### XmlSerializer
+A Static class wrapped around .Net native XmlSerializer to load and save objects in Xml Files
+
+### JsonSerializer
+A Static class wrapped around Newtonsoft Json to load and save objects in json Files
+
 
 Saving file example:
 ~~~C#
 var data = new Data();
 ...
 XmlSerializer.ToFile("myData.xml", data);
+JsonSerializer.ToFile("myData.json", data);
 ~~~
 
 Loading from file or create a new instance
 ~~~C#
 // load data or creates a new
 var data = XmlSerializer.LoadOrCreate("myData.xml", new Data());
+var data = JsonSerializer.LoadOrCreate("myData.json", new Data());
 ~~~
 
 Test if a file exists and loads if it do exist
 ~~~C#
 // load data or creates a new
 if(XmlSerializer.TryLoadFile("myData.xml", out Data myData)){...}
+if(JsonSerializer.TryLoadFile("myData.json", out Data myData)){...}
 ~~~
 
 ## Sample project
