@@ -17,7 +17,7 @@ namespace Simple.BotUtils.Test
 
             // Apply args
             Startup.ArgumentParser.ParseInto(args, cfg);
-            cfg.Save<MyConfig>();
+            cfg.Save();
 
             // continue ...
             Console.WriteLine(cfg);
