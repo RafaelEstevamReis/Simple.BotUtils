@@ -76,6 +76,7 @@ Allows access and selection with an Argument object, a dictionary or a NameValue
 
 Is also possible to map the arguments to an Object/Class
 
+Read arguments as a Dictionary
 ~~~C#
   // argument access
   public static void Main(string[] args)
@@ -90,14 +91,39 @@ Is also possible to map the arguments to an Object/Class
   }
 ~~~
 
+Create a class with the arguments
 ~~~C#
-  // fill a class with arguments
+  // app.exe -n Name --number 12345
   public static void Main(string[] args)
   { 
-    // app.exe -n Name --number 12345
     var data = Startup.ArgumentParser.ParseAs<MyData>(args);
+    ...
   }
   class MyData{
+    [Startup.ArgumentKey("-n", "--name")]
+    public string MyName { get; set; }
+    [Startup.ArgumentKey("-nb", "--number")]
+    public int MyInt { get; set; }
+  }
+~~~
+
+// Fill an existing class with arguments
+~~~C#
+  // app.exe -n Name --number 12345
+  public static void Main(string[] args)
+  { 
+    // Load existing configuration
+    var cfg = ConfigBase.Load<Config>("config.xml");
+    // Update config with arguments, if any
+    if (args.Length > 0)
+    {
+        ArgumentParser.ParseInto(args, cfg);
+        // and save to next boot
+        cfg.Save();
+    }
+    ...
+  }
+  class Config : ConfigBase{
     [Startup.ArgumentKey("-n", "--name")]
     public string MyName { get; set; }
     [Startup.ArgumentKey("-nb", "--number")]
