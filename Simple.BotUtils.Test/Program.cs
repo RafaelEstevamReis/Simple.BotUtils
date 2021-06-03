@@ -1,5 +1,4 @@
-﻿using Simple.BotUtils.Caching;
-using Simple.BotUtils.Data;
+﻿using Simple.BotUtils.Data;
 using System;
 
 namespace Simple.BotUtils.Test
