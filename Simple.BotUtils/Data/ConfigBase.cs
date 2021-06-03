@@ -3,15 +3,11 @@ namespace Simple.BotUtils.Data
 {
     public interface IConfigBase
     {
-#if NET40
-        internal string FilePath { get; set; }
-#else
-        protected internal string FilePath { get; set; }
-#endif
+        string FilePath { get; set; }
     }
     public abstract class ConfigBase : IConfigBase
     {
-        string IConfigBase.FilePath { get; set; }
+        public string FilePath { get; set; }
 
         public static T Load<T>(string FilePath)
             where T : IConfigBase, new()
