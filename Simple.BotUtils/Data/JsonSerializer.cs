@@ -1,25 +1,25 @@
-﻿#if !(NETSTANDARD1_0 || NET40 || NET45)
-using System.IO;
+﻿using System.IO;
 
 namespace Simple.BotUtils.Data
 {
     /// <summary>
-    /// Basic json serializer/deserializer based on System.Text.Json
+    /// Basic json serializer/deserializer based on Newtonsoft.Json
     /// </summary>
     public class JsonSerializer
     {
         public static T Load<T>(Stream source)
         {
             var sr = new StreamReader(source);
-            return System.Text.Json.JsonSerializer.Deserialize<T>(sr.ReadToEnd());
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(sr.ReadToEnd());
         }
         public static void Save<T>(Stream source, T obj)
         {
             var sr = new StreamWriter(source);
-            var json = System.Text.Json.JsonSerializer.Serialize(obj);
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
             sr.Write(json);
         }
 
+#if !NETSTANDARD1_0
         public static bool TryLoadFile<T>(string fileName, out T value)
         {
             value = default;
@@ -46,6 +46,6 @@ namespace Simple.BotUtils.Data
             using FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate);
             Save<T>(fs, obj);
         }
+#endif
     }
 }
-#endif
