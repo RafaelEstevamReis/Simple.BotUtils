@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;netcoreapp2.1;netstandard1.0;netstandard2.0;net5.0;net48;net472;net46;net45;net40</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;netcoreapp2.1;netstandard1.0;netstandard2.0;net5.0;net48;net4.7.2;net4.6.1;net45;net40</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
     <Version>1.3.3</Version>
     <Authors>RafaelEstevam.Net</Authors>
@@ -17,5 +17,4 @@
 Paired with commit 7f42b01
 https://github.com/RafaelEstevamReis/Simple.BotUtils</PackageReleaseNotes>
   </PropertyGroup>
-
 </Project>
