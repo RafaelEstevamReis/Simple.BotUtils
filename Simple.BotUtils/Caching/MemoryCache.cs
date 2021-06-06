@@ -14,6 +14,8 @@ namespace Simple.BotUtils.Caching
             lastMaintenance = DateTime.Now;
         }
 
+        public bool HasKey(string key) => items.ContainsKey(key);
+
         public void Add(string key, CacheOptions options)
         {
             items[key] = new CacheItem(options);
@@ -23,9 +25,8 @@ namespace Simple.BotUtils.Caching
         {
             doMaintenance();
 
-            
             CacheItem item = GetItemInfo(key);
-            
+
             item.TryRenew();
 
             value = null;
@@ -66,10 +67,17 @@ namespace Simple.BotUtils.Caching
 
             return Get<T>(key);
         }
-
-        public void Invalidate(string key)
+        /// <summary>
+        /// Invalidates an entry
+        /// </summary>
+        /// <param name="key">Entry key to be invalidated</param>
+        /// <returns>True if the value was invalidated, False if the key does not exists</returns>
+        public bool Invalidate(string key)
         {
+            if (!items.ContainsKey(key)) return false;
+
             GetItemInfo(key).Invalidate();
+            return true;
         }
 
         public CacheItem GetItemInfo(string key)
