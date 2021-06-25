@@ -8,6 +8,13 @@ namespace Simple.BotUtils.Test
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+
+            Messages.Mediator.Register(new Pinger());
+
+            string input = Console.ReadLine();
+            var output = Messages.Mediator.Execute<Pinger, string, string>(input);
+            Console.WriteLine(output);
+
             // Create fake args
             args = new string[] { "-a", "nothing", "-n", "da-bot", "--MyLongNumber", "684261" };
 
@@ -20,6 +27,14 @@ namespace Simple.BotUtils.Test
 
             // continue ...
             Console.WriteLine(cfg);
+        }
+    }
+
+    public class Pinger : Messages.IMessenger<string, string>
+    {
+        public string Send(string request)
+        {
+            return $"pong: {request}";
         }
     }
 
