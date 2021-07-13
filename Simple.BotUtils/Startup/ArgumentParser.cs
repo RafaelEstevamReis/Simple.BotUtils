@@ -20,7 +20,18 @@ namespace Simple.BotUtils.Startup
                 }
                 else
                 {
-                    collection[last] = args[i];
+                    string val = args[i];
+                    if (val.Length > 2)
+                    {
+                        bool boxed = false;
+                        if (val.StartsWith('"') && val.EndsWith('"')) boxed = true;
+                        if (val.StartsWith('\'') && val.EndsWith('\'')) boxed = true;
+                        if (val.StartsWith('`') && val.EndsWith('`')) boxed = true;
+
+                        if (boxed) val = val.Substring(1, val.Length - 2);
+                    }
+
+                    collection[last] = val;
                     last = "";
                 }
             }
@@ -39,7 +50,7 @@ namespace Simple.BotUtils.Startup
         public static T MapTo<T>(Arguments arguments, T obj)
             where T : new()
         {
-            if(obj == null) obj = new T();
+            if (obj == null) obj = new T();
 
             var type = typeof(T);
             foreach (var prop in type.GetProperties())
@@ -48,7 +59,7 @@ namespace Simple.BotUtils.Startup
                 if (!prop.CanWrite) continue;
                 // same name
                 var nameOptions = new string[] { $"--{prop.Name}" };
-                
+
                 // ArgumentKey Attributes
                 var attrArgKeys = prop.GetCustomAttributes(false)
                                      .OfType<ArgumentKeyAttribute>();

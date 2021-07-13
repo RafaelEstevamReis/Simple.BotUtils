@@ -9,14 +9,8 @@ namespace Simple.BotUtils.Test
         {
             Console.WriteLine("Hello World!");
 
-            Messages.Mediator.Register(new Pinger());
-
-            string input = Console.ReadLine();
-            var output = Messages.Mediator.Execute<Pinger, string, string>(input);
-            Console.WriteLine(output);
-
             // Create fake args
-            args = new string[] { "-a", "nothing", "-n", "da-bot", "--MyLongNumber", "684261" };
+            args = new string[] { "-a", "nothing", "-n", "da-bot", "--MyLongNumber", "684261", "--MyNegativeNumber", "\"-123456\"" };
 
             // load my config from Disk
             var cfg = ConfigBase.Load<MyConfig>("cfg.xml");
@@ -48,6 +42,8 @@ namespace Simple.BotUtils.Test
         public int MyNumber { get; set; }
         [Startup.ArgumentKey("-ln", "--long")]
         public long MyLongNumber { get; set; }
+        [Startup.ArgumentKey("-nn", "--MyNegativeNumber")]
+        public int MyNegativeNumber { get; set; }
 
         public override string ToString()
         {
