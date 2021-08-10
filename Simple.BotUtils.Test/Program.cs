@@ -13,7 +13,7 @@ namespace Simple.BotUtils.Test
             args = new string[] { "-a", "nothing", "-n", "da-bot", "--MyLongNumber", "684261", "--MyNegativeNumber", "\"-123456\"" };
 
             // load my config from Disk
-            var cfg = ConfigBase.Load<MyConfig>("cfg.xml");
+            var cfg = ConfigBase.LoadXml<MyConfig>("cfg.xml");
 
             // Apply args
             Startup.ArgumentParser.ParseInto(args, cfg);
