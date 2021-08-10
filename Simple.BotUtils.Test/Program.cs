@@ -24,14 +24,6 @@ namespace Simple.BotUtils.Test
         }
     }
 
-    public class Pinger : Messages.IMessenger<string, string>
-    {
-        public string Send(string request)
-        {
-            return $"pong: {request}";
-        }
-    }
-
     public class MyConfig : ConfigBase
     {
         [Startup.ArgumentKey("-n", "--name")]
