@@ -1,5 +1,3 @@
-Test commit after github internal server error locked repository
-
 [![.NET](https://github.com/RafaelEstevamReis/Simple.BotUtils/actions/workflows/dotnet.yml/badge.svg)](https://github.com/RafaelEstevamReis/Simple.BotUtils/actions/workflows/dotnet.yml)
 
 [![NuGet](https://buildstats.info/nuget/Simple.BotUtils)](https://www.nuget.org/packages/Simple.BotUtils)
