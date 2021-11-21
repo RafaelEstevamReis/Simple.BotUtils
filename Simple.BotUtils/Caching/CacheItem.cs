@@ -8,7 +8,7 @@ namespace Simple.BotUtils.Caching
         public DateTime AddedOn { get; private set; }
         public DateTime? LastAccess { get; private set; }
         public DateTime? LastUpdate { get; private set; }
-      
+
         public DateTime ExpiresOn
         {
             get
@@ -32,7 +32,7 @@ namespace Simple.BotUtils.Caching
             }
         }
 
-        private object currentValue; 
+        private object currentValue;
         private bool canBeUsed;
 
 
