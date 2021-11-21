@@ -44,8 +44,6 @@ namespace Simple.BotUtils.Jobs
             }
         }
 
-        [Obsolete("Use RunTimedJobs instead")]
-        public void RunTimedJob() => RunTimedJobs();
         public void RunTimedJobs()
         {
             foreach (var v in jobs.Values)
