@@ -80,6 +80,12 @@ namespace Simple.BotUtils.Caching
             return true;
         }
 
+        public void UpdateValue<T>(string key, T value)
+        {
+            var info = GetItemInfo(key);
+            info.UpdateValue(value);
+        }
+
         public CacheItem GetItemInfo(string key)
         {
             if (!items.ContainsKey(key)) throw new KeyNotFoundException();

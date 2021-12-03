@@ -60,7 +60,7 @@ namespace Simple.BotUtils.Caching
             if (CreationOptions.ExpirationPolicy == ExpirationPolicy.DoNotRenew) return;
 
             // Update !
-            update();
+            doUpdate();
         }
 
         public void FreeExpired()
@@ -74,14 +74,19 @@ namespace Simple.BotUtils.Caching
             currentValue = null;
         }
 
-        private void update()
+        internal void UpdateValue<T>(T value) => update(value);
+
+        private void doUpdate()
         {
             if (CreationOptions.UpdateCallback == null) return;
+            update(CreationOptions.UpdateCallback());
+        }
 
-            currentValue = CreationOptions.UpdateCallback();
+        private void update(object value)
+        {
+            currentValue = value;
             LastUpdate = DateTime.Now;
             canBeUsed = true;
         }
-
     }
 }
