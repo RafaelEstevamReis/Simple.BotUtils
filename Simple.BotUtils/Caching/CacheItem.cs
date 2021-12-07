@@ -18,7 +18,7 @@ namespace Simple.BotUtils.Caching
                 {
                     return (LastAccess ?? LastUpdate ?? AddedOn) + CreationOptions.ExpirationValue;
                 }
-                return AddedOn + CreationOptions.ExpirationValue;
+                return (LastUpdate ?? AddedOn) + CreationOptions.ExpirationValue;
             }
         }
 
