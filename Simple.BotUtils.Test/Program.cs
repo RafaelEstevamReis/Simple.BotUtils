@@ -43,6 +43,11 @@ namespace Simple.BotUtils.Test
             Console.WriteLine($"Sum: {sum}");
             // Using DI injection
             ctrl.Execute("ShowMyName");
+
+            // splitting a received text
+            string message = "showinfo \"Bla bla bla bla\"";
+            ctrl.ExecuteFromText(message);
+
         }
     }
 
