@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;netcoreapp2.1;netstandard1.0;netstandard2.0;net6.0;net5.0;net48;net4.7.2;net4.6.1;net45;net40</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
-    <Version>1.3.8</Version>
+    <Version>1.4.0</Version>
     <Authors>RafaelEstevam.Net</Authors>
     <Company>RafaelEstevam.Net</Company>
     <Product>Simple Bot Utils</Product>
@@ -14,7 +14,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Simple Utility Bots</PackageTags>
     <PackageReleaseNotes>See examples and documentation on the GitHub page
-Paired with commit 61edc0e
+Paired with commit 0dcc83a
 https://github.com/RafaelEstevamReis/Simple.BotUtils</PackageReleaseNotes>
   </PropertyGroup>
 
