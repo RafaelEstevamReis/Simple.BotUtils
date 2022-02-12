@@ -1,4 +1,6 @@
-﻿using Simple.BotUtils.Data;
+﻿using Simple.BotUtils.Controllers;
+using Simple.BotUtils.Data;
+using Simple.BotUtils.DI;
 using System;
 
 namespace Simple.BotUtils.Test
@@ -14,13 +16,31 @@ namespace Simple.BotUtils.Test
 
             // load my config from Disk
             var cfg = MyConfig.Load("cfg.xml");
-            
+
             // Apply args
             Startup.ArgumentParser.ParseInto(args, cfg);
             cfg.Save();
+            // Save Config in DI
+            Injector.AddSingleton(cfg);
 
             // continue ...
             Console.WriteLine(cfg);
+
+            // Call Mathods
+            var ctrl = new ControllerManager()
+                       .AddController<MyMethods>();
+            //          OR
+            //         .AddControllers(System.Reflection.Assembly.GetExecutingAssembly());
+
+            // Void methods
+            ctrl.Execute("ShowInfo", "Bla bla bla bla");
+            ctrl.Execute("ShowNumber", "42");
+            ctrl.Execute("ShowDouble", "42.42");
+            // Return methods
+            int sum = ctrl.Execute<int>("Sum", "40", "2");
+            Console.WriteLine($"Sum: {sum}");
+            // Using DI injection
+            ctrl.Execute("ShowMyName");
         }
     }
 
@@ -41,6 +61,16 @@ namespace Simple.BotUtils.Test
         {
             return $"{MyName} | {MyInfo} | {MyNumber}: {MyLongNumber}";
         }
+    }
+
+    public class MyMethods : IController
+    {
+        public void ShowInfo(string info) => Console.WriteLine(info);
+        public void ShowNumber(int number) => Console.WriteLine(number);
+        public void ShowDouble(double number) => Console.WriteLine(number);
+        public int Sum(int a, int b) => a + b;
+        public void ShowMyName([FromDI] MyConfig cfg) => Console.WriteLine(cfg.MyName);
+        
     }
 
 }
