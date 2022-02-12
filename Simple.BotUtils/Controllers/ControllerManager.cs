@@ -45,7 +45,7 @@ namespace Simple.BotUtils.Controllers
         {
             foreach (var method in methods)
             {
-                string name = method.Name;
+                string name = method.Name.ToLower();
 
                 if (!controllers.ContainsKey(name)) controllers.Add(name, new EndpointInfo() { ControllerType = t });
 
@@ -56,12 +56,41 @@ namespace Simple.BotUtils.Controllers
             }
         }
 
+        public void ExecuteFromText(string text)
+            => ExecuteFromText<object>(text);
+        public T ExecuteFromText<T>(string text)
+            => Execute<T>(Startup.ArgumentParser.ArgumentSplit(text));
+
+        public void Execute(string[] methodWithParameters)
+            => Execute<object>(methodWithParameters);
+        public T Execute<T>(string[] methodWithParameters)
+        {
+            if (methodWithParameters.Length == 0) throw new ArgumentException("Must have at least one value");
+
+            if (methodWithParameters.Length == 1)
+            {
+                return Execute<T>(methodWithParameters[0]);
+            }
+            else
+            {
+                string[] arguments = new string[methodWithParameters.Length - 1];
+                Array.Copy(methodWithParameters, 1, arguments, 0, arguments.Length);
+
+                string method = methodWithParameters[0];
+                return Execute<T>(method, arguments);
+            }
+        }
+
         public void Execute(string method, params object[] parameters)
             => Execute<object>(method, parameters);
         public T Execute<T>(string method, params object[] parameters)
-        {
-            if (!controllers.ContainsKey(method)) throw new KeyNotFoundException();
+            => execute<T>(method, parameters);
 
+        T execute<T>(string method, object[] parameters)
+        {
+            method = method.ToLower();
+
+            if (!controllers.ContainsKey(method)) throw new KeyNotFoundException();
             var info = controllers[method];
 
             var matchedMethods = info.Methods.Where(m => countParameters(m.GetParameters()) == parameters.Length)
