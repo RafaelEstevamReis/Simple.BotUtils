@@ -56,8 +56,8 @@ namespace Simple.BotUtils.Controllers
             }
         }
 
-        public void Execute(string method, params object[] paramters)
-            => Execute<object>(method, paramters);
+        public void Execute(string method, params object[] parameters)
+            => Execute<object>(method, parameters);
         public T Execute<T>(string method, params object[] parameters)
         {
             if (!controllers.ContainsKey(method)) throw new KeyNotFoundException();
