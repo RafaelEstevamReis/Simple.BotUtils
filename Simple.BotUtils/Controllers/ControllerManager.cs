@@ -159,8 +159,8 @@ namespace Simple.BotUtils.Controllers
                 else
                 {
                     throw new InvalidMethodParameterTypeException($"Invalid conversion, see details",
-                                                                  paramInfo[i].Name, 
-                                                                  paramInfo[i].ParameterType, 
+                                                                  paramInfo[i].Name,
+                                                                  paramInfo[i].ParameterType,
                                                                   parameters[i].GetType());
                 }
 
