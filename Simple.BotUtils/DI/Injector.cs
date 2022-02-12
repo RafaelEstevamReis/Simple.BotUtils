@@ -25,9 +25,11 @@ namespace Simple.BotUtils.DI
             };
         }
 
-        public static T Get<T>()
+        public static T Get<T>() 
+            => (T)Get(typeof(T));
+        public static object Get(Type t)
         {
-            var info = dicTypes[typeof(T)];
+            var info = dicTypes[t];
             object obj;
 
             if (info.InjectionType == InjectionType.Transient)
@@ -43,7 +45,7 @@ namespace Simple.BotUtils.DI
                 throw new NotImplementedException();
             }
 
-            return (T)obj;
+            return obj;
         }
     }
 }
