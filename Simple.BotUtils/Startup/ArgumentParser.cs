@@ -1,10 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Simple.BotUtils.Startup
 {
     public class ArgumentParser
     {
+        public static string[] ArgumentSplit(string args)
+            => quotedSplit(args).ToArray();
+        private static IEnumerable<string> quotedSplit(string original)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            bool quoted = false;
+            for (int i = 0; i < original.Length; i++)
+            {
+                if (original[i] == '"')
+                {
+                    quoted = !quoted;
+                    continue;
+                }
+
+                if (!quoted && char.IsWhiteSpace(original[i]))
+                {
+                    yield return sb.ToString();
+                    sb.Clear();
+                    continue;
+                }
+
+                sb.Append(original[i]);
+            }
+
+            if(sb.Length > 0) yield return sb.ToString();
+        }
+
         public static Arguments Parse(string[] args)
         {
             var collection = new Arguments();
