@@ -56,9 +56,9 @@ namespace Simple.BotUtils.Controllers
             }
         }
 
-        public void Execute(string method, params string[] paramters)
+        public void Execute(string method, params object[] paramters)
             => Execute<object>(method, paramters);
-        public T Execute<T>(string method, params string[] parameters)
+        public T Execute<T>(string method, params object[] parameters)
         {
             if (!controllers.ContainsKey(method)) throw new KeyNotFoundException();
 
@@ -68,10 +68,10 @@ namespace Simple.BotUtils.Controllers
                                              .ToArray();
             if (matchedMethods.Length == 0)
             {
-                throw new Exception("No suitable methods found");
+                throw new NoSuitableMethodFound(method);
             }
 
-            return execute<T>(info, matchedMethods[0], method, parameters);
+            return execute<T>(info, matchedMethods[0], parameters);
         }
         private int countParameters(ParameterInfo[] parameterInfos)
         {
@@ -80,7 +80,7 @@ namespace Simple.BotUtils.Controllers
                                  .Count();
         }
 
-        private T execute<T>(EndpointInfo info, MethodInfo methodInfo, string method, string[] parameters)
+        private T execute<T>(EndpointInfo info, MethodInfo methodInfo, object[] parameters)
         {
             // instantiate
             IController instance = (IController)Activator.CreateInstance(info.ControllerType);
@@ -89,7 +89,7 @@ namespace Simple.BotUtils.Controllers
             return (T)methodInfo.Invoke(instance, objParams);
 
         }
-        private object[] convertParams(MethodInfo methodInfo, string[] parameters)
+        private object[] convertParams(MethodInfo methodInfo, object[] parameters)
         {
             var invariant = System.Globalization.CultureInfo.InvariantCulture;
             var paramInfo = methodInfo.GetParameters();
@@ -104,14 +104,18 @@ namespace Simple.BotUtils.Controllers
                     var type = paramInfo[i].ParameterType;
                     p = Injector.Get(type);
                 }
-                else
+                else if (parameters[i].GetType() == paramInfo[i].ParameterType)
+                {
+                    p = parameters[i];
+                }
+                else if (parameters[i] is string)
                 {
                     if (paramInfo[i].ParameterType == typeof(string)) p = parameters[pCount]; // do not even try
                     else if (paramInfo[i].ParameterType == typeof(int)) p = Convert.ToInt32(parameters[pCount]);
                     else if (paramInfo[i].ParameterType == typeof(long)) p = Convert.ToInt64(parameters[pCount], invariant);
                     else if (paramInfo[i].ParameterType == typeof(double)) p = Convert.ToDouble(parameters[pCount], invariant);
                     else if (paramInfo[i].ParameterType == typeof(float)) p = Convert.ToSingle(parameters[pCount], invariant);
-                    else if (paramInfo[i].ParameterType == typeof(Guid)) p = Guid.Parse(parameters[pCount]);
+                    else if (paramInfo[i].ParameterType == typeof(Guid)) p = Guid.Parse((string)parameters[pCount]);
                     else
                     {
                         try
@@ -123,6 +127,14 @@ namespace Simple.BotUtils.Controllers
 
                     pCount++;
                 }
+                else
+                {
+                    throw new InvalidMethodParameterTypeException($"Invalid conversion, see details",
+                                                                  paramInfo[i].Name, 
+                                                                  paramInfo[i].ParameterType, 
+                                                                  parameters[i].GetType());
+                }
+
                 values[i] = p;
             }
 
