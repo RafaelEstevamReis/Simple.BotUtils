@@ -35,9 +35,11 @@ namespace Simple.BotUtils.Test
             // Void methods
             ctrl.Execute("ShowInfo", "Bla bla bla bla");
             ctrl.Execute("ShowNumber", "42");
-            ctrl.Execute("ShowDouble", "42.42");
+            ctrl.Execute("ShowDouble", "42.42"); // string
+            ctrl.Execute("ShowDouble", 42.42); // Native
             // Return methods
-            int sum = ctrl.Execute<int>("Sum", "40", "2");
+            int sum = ctrl.Execute<int>("Sum", "40", "2"); // string
+            sum = ctrl.Execute<int>("Sum", 40, 2); // Native
             Console.WriteLine($"Sum: {sum}");
             // Using DI injection
             ctrl.Execute("ShowMyName");
