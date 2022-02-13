@@ -149,11 +149,12 @@ namespace Simple.BotUtils.Controllers
                     var type = paramInfo[i].ParameterType;
                     p = Injector.Get(type);
                 }
-                else if (parameters[i].GetType() == paramInfo[i].ParameterType)
+                else if (parameters[pCount].GetType() == paramInfo[i].ParameterType)
                 {
-                    p = parameters[i];
+                    p = parameters[pCount];
+                    pCount++;
                 }
-                else if (parameters[i] is string)
+                else if (parameters[pCount] is string)
                 {
                     if (paramInfo[i].ParameterType == typeof(string)) p = parameters[pCount]; // do not even try
                     else if (paramInfo[i].ParameterType == typeof(int)) p = Convert.ToInt32(parameters[pCount]);
