@@ -134,12 +134,30 @@ namespace Simple.BotUtils.Controllers
 
         private T execute<T>(EndpointInfo info, MethodInfo methodInfo, object[] parameters)
         {
-            // instantiate
-            IController instance = (IController)Activator.CreateInstance(info.ControllerType);
+            // Get constructors
+            var constructors = info.ControllerType.GetConstructors()
+                                                  .OrderByDescending( o=> o.GetParameters().Length)
+                                                  .ToArray();
+            if(constructors.Length == 0)
+            {
+                throw new Exception($"No available constructors for {info.Name}");
+            }
+            var ctor = constructors[0];
+            // And it's parameters
+            var ctorParams = ctor.GetParameters();
+            // Process parameters from DI
+            object[] ctorArgs = new object[ctorParams.Length];
+            for (int i = 0; i < ctorParams.Length; i++)
+            {
+                var type = ctorParams[i].ParameterType;
+                ctorArgs[i] = Injector.Get(type);
+            }
 
+            // instantiate
+            var instance = (IController)ctor.Invoke(ctorArgs);
+            // Execute
             var objParams = convertParams(methodInfo, parameters);
             return (T)methodInfo.Invoke(instance, objParams);
-
         }
         private object[] convertParams(MethodInfo methodInfo, object[] parameters)
         {
