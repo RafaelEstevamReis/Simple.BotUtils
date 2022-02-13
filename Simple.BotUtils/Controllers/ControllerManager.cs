@@ -61,6 +61,22 @@ namespace Simple.BotUtils.Controllers
         public T ExecuteFromText<T>(string text)
             => Execute<T>(Startup.ArgumentParser.ArgumentSplit(text));
 
+        public void ExecuteFromText(object context, string text)
+            => ExecuteFromText<object>(context, text);
+        public T ExecuteFromText<T>(object context, string text)
+        {
+            // build as:
+            // [method] [context] [params]
+
+            var args = Startup.ArgumentParser.ArgumentSplit(text);
+            string methodName = args[0];
+
+            object[] newArgs = new object[args.Length - 1 + 1];
+            newArgs[0] = context;
+            Array.Copy(args, 1, newArgs, 1, args.Length - 1);
+
+            return execute<T>(methodName, newArgs);
+        }
         public void Execute(string[] methodWithParameters)
             => Execute<object>(methodWithParameters);
         public T Execute<T>(string[] methodWithParameters)
