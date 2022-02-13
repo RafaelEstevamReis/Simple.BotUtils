@@ -17,6 +17,17 @@ namespace Simple.BotUtils.Controllers
             GivenType = givenType;
         }
     }
+    public class UnkownMethod
+            : Exception
+    {
+        public string MethodName { get; private set; }
+
+        public UnkownMethod(string methodName)
+            : base($"No Method {methodName} found.")
+        {
+            MethodName = methodName;
+        }
+    }
     public class NoSuitableMethodFound
             : Exception
     {

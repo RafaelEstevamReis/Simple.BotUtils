@@ -1,11 +1,11 @@
 ﻿#if !NETSTANDARD1_0
 
-using Simple.BotUtils.DI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Simple.BotUtils.DI;
 
 namespace Simple.BotUtils.Controllers
 {
@@ -90,7 +90,7 @@ namespace Simple.BotUtils.Controllers
         {
             method = method.ToLower();
 
-            if (!controllers.ContainsKey(method)) throw new KeyNotFoundException();
+            if (!controllers.ContainsKey(method)) throw new UnkownMethod(method);
             var info = controllers[method];
 
             var matchedMethods = info.Methods.Where(m => countParameters(m.GetParameters()) == parameters.Length)
