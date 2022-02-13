@@ -41,13 +41,12 @@ namespace Simple.BotUtils.Test
             int sum = ctrl.Execute<int>("Sum", "40", "2"); // string
             sum = ctrl.Execute<int>("Sum", 40, 2); // Native
             Console.WriteLine($"Sum: {sum}");
-            // Using DI injection
+            // Using DI injection, ShowMyName will get cfg object from DI
             ctrl.Execute("ShowMyName");
 
             // splitting a received text
-            string message = "showinfo \"Bla bla bla bla\"";
-            ctrl.ExecuteFromText(message);
-
+            string message = "ShowCallerInfo \"Bla bla bla bla\"";
+            ctrl.ExecuteFromText(context: 42, text: message);
         }
     }
 
@@ -78,6 +77,9 @@ namespace Simple.BotUtils.Test
         public int Sum(int a, int b) => a + b;
         public void ShowMyName([FromDI] MyConfig cfg) => Console.WriteLine(cfg.MyName);
         
+        public void ShowCallerInfo(int contextParam, string textParams)
+            => Console.WriteLine($"ShowCallerInfo[{contextParam}] {textParams}");
+
     }
 
 }
