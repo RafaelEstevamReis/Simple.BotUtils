@@ -28,7 +28,7 @@ namespace Simple.BotUtils.Test
 
             // Call Mathods
             var ctrl = new ControllerManager()
-                       .AddController<MyMethods>();
+                       .AddController<MyControllers>();
             //          OR
             //         .AddControllers(System.Reflection.Assembly.GetExecutingAssembly());
 
@@ -71,7 +71,7 @@ namespace Simple.BotUtils.Test
         }
     }
 
-    public class MyMethods : IController
+    public class MyControllers : IController
     {
         public void ShowInfo(string info) => Console.WriteLine(info);
         public void ShowNumber(int number) => Console.WriteLine(number);
