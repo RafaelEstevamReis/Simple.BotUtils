@@ -109,7 +109,8 @@ namespace Simple.BotUtils.Controllers
             if (!controllers.ContainsKey(method)) throw new UnkownMethod(method);
             var info = controllers[method];
 
-            var matchedMethods = info.Methods.Where(m => countParameters(m.GetParameters()) == parameters.Length)
+            var matchedMethods = info.Methods.Where(m => countParameters(m) == parameters.Length
+                                                         || hasParamsArray(m))
                                              .ToArray();
             if (matchedMethods.Length == 0)
             {
@@ -118,11 +119,17 @@ namespace Simple.BotUtils.Controllers
 
             return execute<T>(info, matchedMethods[0], parameters);
         }
-        private int countParameters(ParameterInfo[] parameterInfos)
+
+        private bool hasParamsArray(MethodInfo m)
         {
-            return parameterInfos.Where(p => !p.GetCustomAttributes(false)
-                                              .Any(a => a is FromDIAttribute))
-                                 .Count();
+            return m.GetParameters().Any(p => p.GetCustomAttributes(false).Any(a => a is ParamArrayAttribute));
+        }
+        private int countParameters(MethodInfo m)
+        {
+
+            return m.GetParameters().Where(p => !p.GetCustomAttributes(false)
+                                                  .Any(a => a is FromDIAttribute))
+                                    .Count();
         }
 
         private T execute<T>(EndpointInfo info, MethodInfo methodInfo, object[] parameters)
@@ -143,14 +150,40 @@ namespace Simple.BotUtils.Controllers
             int pCount = 0;
             for (int i = 0; i < paramInfo.Length; i++)
             {
+                // Execute type translation
+                // TODO: refactor existing type conversion
+
                 object p;
                 if (paramInfo[i].GetCustomAttributes(false).Any(a => a is FromDIAttribute))
                 {
                     var type = paramInfo[i].ParameterType;
                     p = Injector.Get(type);
                 }
+                else if (paramInfo[i].GetCustomAttributes(false).Any(a => a is ParamArrayAttribute))
+                {
+                    var arrType = paramInfo[i].ParameterType.GetElementType();
+                    if (arrType == typeof(string))
+                    {
+                        string[] arr = new string[parameters.Length - pCount];
+                        //Array.Copy(parameters, pCount, arr, 0, arr.Length);
+                        for (int j = 0; j < parameters.Length - pCount; j++)
+                        {
+                            arr[j] = parameters[pCount + j]?.ToString();
+                        }
+                        values[i] = arr;
+                    }
+                    else
+                    {
+                        object[] arr = new object[parameters.Length - pCount];
+                        Array.Copy(parameters, pCount, arr, 0, arr.Length);
+                        values[i] = arr;
+                    }
+
+                    break; // PARAMS is aways last
+                }
                 else if (parameters[pCount].GetType() == paramInfo[i].ParameterType)
                 {
+                    // put all remaining args as array
                     p = parameters[pCount];
                     pCount++;
                 }

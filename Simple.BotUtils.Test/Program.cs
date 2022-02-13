@@ -47,6 +47,8 @@ namespace Simple.BotUtils.Test
             // splitting a received text, passing a context argument
             string message = "ShowCallerInfo \"Bla bla bla bla\"";
             ctrl.ExecuteFromText(context: 42, text: message);
+            // Support for `params`
+            ctrl.ExecuteFromText("echo a b c d e");
         }
     }
 
@@ -80,6 +82,10 @@ namespace Simple.BotUtils.Test
         public void ShowCallerInfo(int contextParam, string textParams, [FromDI] MyConfig cfg)
             => Console.WriteLine($"ShowCallerInfo[{contextParam}] {textParams}");
 
+        public void Echo(params string[] contents)
+        {
+            Console.WriteLine(string.Join(' ', contents));
+        }
     }
 
 }
