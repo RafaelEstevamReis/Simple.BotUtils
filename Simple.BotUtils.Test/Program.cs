@@ -44,7 +44,7 @@ namespace Simple.BotUtils.Test
             // Using DI injection, ShowMyName will get cfg object from DI
             ctrl.Execute("ShowMyName");
 
-            // splitting a received text
+            // splitting a received text, passing a context argument
             string message = "ShowCallerInfo \"Bla bla bla bla\"";
             ctrl.ExecuteFromText(context: 42, text: message);
         }
@@ -76,8 +76,8 @@ namespace Simple.BotUtils.Test
         public void ShowDouble(double number) => Console.WriteLine(number);
         public int Sum(int a, int b) => a + b;
         public void ShowMyName([FromDI] MyConfig cfg) => Console.WriteLine(cfg.MyName);
-        
-        public void ShowCallerInfo(int contextParam, string textParams)
+
+        public void ShowCallerInfo(int contextParam, string textParams, [FromDI] MyConfig cfg)
             => Console.WriteLine($"ShowCallerInfo[{contextParam}] {textParams}");
 
     }
