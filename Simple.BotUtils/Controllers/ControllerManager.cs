@@ -45,6 +45,13 @@ namespace Simple.BotUtils.Controllers
         {
             foreach (var method in methods)
             {
+                // do not bind "object" methods
+                if (method.Name == "Equals") continue;
+                if (method.Name == "GetHashCode") continue;
+                if (method.Name == "GetType") continue;
+                if (method.Name == "MemberwiseClone") continue;
+                if (method.Name == "ToString") continue;
+
                 string name = method.Name.ToLower();
 
                 if (!controllers.ContainsKey(name)) controllers.Add(name, new EndpointInfo() { ControllerType = t });
