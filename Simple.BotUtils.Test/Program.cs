@@ -26,7 +26,7 @@ namespace Simple.BotUtils.Test
             // continue ...
             Console.WriteLine(cfg);
 
-            // Call Mathods
+            // Call Methods
             var ctrl = new ControllerManager()
                        .AddController<MyControllers>();
             //          OR
@@ -49,6 +49,11 @@ namespace Simple.BotUtils.Test
             ctrl.ExecuteFromText(context: 42, text: message);
             // Support for `params`
             ctrl.ExecuteFromText("echo a b c d e");
+
+            // Controllers with constructors are instantiated from DI
+            var ctorCtrl = new ControllerManager()
+                       .AddController<ControllersWithCtor>();
+            ctorCtrl.Execute("ShowMyName");
         }
     }
 
@@ -86,6 +91,18 @@ namespace Simple.BotUtils.Test
         {
             Console.WriteLine(string.Join(' ', contents));
         }
+    }
+    public class ControllersWithCtor : IController
+    {
+        private readonly MyConfig config;
+
+        public ControllersWithCtor(MyConfig config)
+        {
+            this.config = config;
+        }
+
+        public void ShowMyName() => Console.WriteLine(config.MyName);
+
     }
 
 }
