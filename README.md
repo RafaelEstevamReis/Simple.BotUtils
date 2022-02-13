@@ -5,6 +5,7 @@
 - [Simple.BotUtils](#simplebotutils)
   - [Compatibility List:](#compatibility-list)
   - [Dependency Injection](#dependency-injection)
+  - [Endpoint-like controllers](#endpoint-like-controllers)
   - [Command-Line parser](#command-line-parser)
   - [Job/Task Scheduler](#jobtask-scheduler)
   - [Memory Caching](#memory-caching)
@@ -67,6 +68,50 @@ Retrieve a new instance for each use
     // Do stuff
   }
 ~~~
+
+## Endpoint-like controllers
+
+A simple mechanism for endpoint creation similar to ASP.net controllers with DI support
+
+Create some endpoints
+```C#
+public class MyMethods : IController
+{
+  public void ShowInfo(string info) => Console.WriteLine(info);
+  public void ShowNumber(int number) => Console.WriteLine(number);
+  public void ShowDouble(double number) => Console.WriteLine(number);
+}
+```
+
+and then easily call them
+```C#
+ctrl.Execute("ShowInfo", "Bla bla bla bla");
+ctrl.Execute("ShowNumber", "42"); // string
+ctrl.Execute("ShowNumber", 42); // Native
+ctrl.Execute("ShowDouble", "42.42"); // string
+ctrl.Execute("ShowDouble", 42.42); // Native
+```
+
+Each controller is an instance allowing multiple clusters of endpoints or what is sometimes called "namespace" (A kind of "route")
+
+Is possible to parse the entire text from a Bot or external access command line
+
+```C#
+string message = "ShowCallerInfo \"Bla bla bla bla\"";
+ctrl.ExecuteFromText(message);
+```
+
+In addition to DI support, is possible to pass `Context` values when calling `ExecuteFromText`
+
+```C#
+public void ShowCallerInfo(int contextParam, string textParams, [FromDI] MyConfig cfg)
+          => Console.WriteLine($"ShowCallerInfo[{contextParam}] {textParams}");
+```
+
+Then called by
+```C#
+ctrl.ExecuteFromText(context: 42, text: message);
+```
 
 ## Command-Line parser
 
