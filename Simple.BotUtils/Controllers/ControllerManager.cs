@@ -12,6 +12,7 @@ namespace Simple.BotUtils.Controllers
     public class ControllerManager
     {
         Dictionary<string, EndpointInfo> controllers;
+        public bool AcceptSlashInMethodName { get; set; }
 
         public ControllerManager()
         {
@@ -53,6 +54,8 @@ namespace Simple.BotUtils.Controllers
                 if (method.Name == "ToString") continue;
 
                 string name = method.Name.ToLower();
+                var nameAttr = method.GetCustomAttributes(false).OfType<MethodNameAttribute>().FirstOrDefault();
+                if (nameAttr != null) name = nameAttr.MethodName.ToLower();
 
                 if (!controllers.ContainsKey(name)) controllers.Add(name, new EndpointInfo() { ControllerType = t });
 
@@ -112,6 +115,7 @@ namespace Simple.BotUtils.Controllers
         T execute<T>(string method, object[] parameters)
         {
             method = method.ToLower();
+            if(method.StartsWith("/") && AcceptSlashInMethodName) method = method.Substring(1);
 
             if (!controllers.ContainsKey(method)) throw new UnkownMethod(method);
             var info = controllers[method];
