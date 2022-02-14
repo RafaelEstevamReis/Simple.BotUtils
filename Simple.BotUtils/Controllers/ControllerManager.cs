@@ -19,6 +19,9 @@ namespace Simple.BotUtils.Controllers
             controllers = new Dictionary<string, EndpointInfo>();
         }
 
+        public string[] GetMethods()
+            => controllers.Keys.ToArray();
+
         public ControllerManager AddControllers(Assembly assembly)
         {
             var interfaceType = typeof(IController);
