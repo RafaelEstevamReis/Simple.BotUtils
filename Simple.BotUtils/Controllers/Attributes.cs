@@ -6,4 +6,15 @@ namespace Simple.BotUtils.Controllers
     public class FromDIAttribute : Attribute
     {
     }
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    public class MethodNameAttribute : Attribute
+    {
+        public string MethodName { get; }
+        public MethodNameAttribute(string name)
+        {
+            MethodName = name;
+        }
+
+    }
 }
