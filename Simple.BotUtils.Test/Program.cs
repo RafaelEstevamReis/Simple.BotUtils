@@ -54,6 +54,9 @@ namespace Simple.BotUtils.Test
             var ctorCtrl = new ControllerManager()
                        .AddController<ControllersWithCtor>();
             ctorCtrl.Execute("ShowMyName");
+            // Support Slash commands
+            ctorCtrl.AcceptSlashInMethodName = true;
+            ctorCtrl.Execute("/ShowMyName");
         }
     }
 
@@ -101,7 +104,8 @@ namespace Simple.BotUtils.Test
             this.config = config;
         }
 
-        public void ShowMyName() => Console.WriteLine(config.MyName);
+        [MethodName("ShowMyName")]
+        public void ShowMyName2() => Console.WriteLine(config.MyName);
 
     }
 
