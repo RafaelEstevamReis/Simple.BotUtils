@@ -177,11 +177,13 @@ namespace Simple.BotUtils.Controllers
 
             try
             {
+                object result = methodInfo.Invoke(instance, objParams);
+
                 if (methodInfo.ReturnType == typeof(Task))
                 {
-                    var task = (Task)methodInfo.Invoke(instance, objParams);
+                    var task = (Task)result;
                     task.Wait();
-                    return default(T);
+                    return default;
                 }
                 else if (methodInfo.ReturnType.BaseType == typeof(Task) && methodInfo.ReturnType.IsGenericType)
                 {
@@ -189,19 +191,18 @@ namespace Simple.BotUtils.Controllers
 
                     if (generic == typeof(T))
                     {
-                        var task = (Task<T>)methodInfo.Invoke(instance, objParams);
-                        return task.Result;
+                        return ((Task<T>)result).Result;
                     }
                     else
                     {
-                        var task = (Task)methodInfo.Invoke(instance, objParams);
+                        var task = (Task)result;
                         task.Wait();
                         return default;
                     }
                 }
                 else
                 {
-                    return (T)methodInfo.Invoke(instance, objParams);
+                    return (T)result;
                 }
             }
             catch (TargetInvocationException ex) { throw ex.InnerException; }
