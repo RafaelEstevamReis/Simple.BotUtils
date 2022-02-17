@@ -2,6 +2,7 @@
 using Simple.BotUtils.Data;
 using Simple.BotUtils.DI;
 using System;
+using System.Threading.Tasks;
 
 namespace Simple.BotUtils.Test
 {
@@ -53,10 +54,13 @@ namespace Simple.BotUtils.Test
             // Controllers with constructors are instantiated from DI
             var ctorCtrl = new ControllerManager()
                        .AddController<ControllersWithCtor>();
+
             ctorCtrl.Execute("ShowMyName");
             // Support Slash commands
             ctorCtrl.AcceptSlashInMethodName = true;
             ctorCtrl.Execute("/ShowMyName");
+            // Tasks ignore Async name
+            ctorCtrl.Execute("DoTask");
         }
     }
 
@@ -106,6 +110,13 @@ namespace Simple.BotUtils.Test
 
         [MethodName("ShowMyName")]
         public void ShowMyName2() => Console.WriteLine(config.MyName);
+
+        public async Task<string> DoTaskAsync()
+        {
+            Console.WriteLine("Async");
+            //throw new Exception("test");
+            return await Task.Run(() => "Async" );
+        }
 
     }
 
