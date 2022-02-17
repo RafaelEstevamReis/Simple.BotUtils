@@ -1,11 +1,12 @@
 ﻿#if !NETSTANDARD1_0
 
+using Simple.BotUtils.DI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Simple.BotUtils.DI;
+using System.Threading.Tasks;
 
 namespace Simple.BotUtils.Controllers
 {
@@ -57,6 +58,8 @@ namespace Simple.BotUtils.Controllers
                 if (method.Name == "ToString") continue;
 
                 string name = method.Name.ToLower();
+                if (name.EndsWith("async")) name = name.Substring(0, name.Length - 5);
+
                 var nameAttr = method.GetCustomAttributes(false).OfType<MethodNameAttribute>().FirstOrDefault();
                 if (nameAttr != null) name = nameAttr.MethodName.ToLower();
 
@@ -118,7 +121,7 @@ namespace Simple.BotUtils.Controllers
         T execute<T>(string method, object[] parameters)
         {
             method = method.ToLower();
-            if(method.StartsWith("/") && AcceptSlashInMethodName) method = method.Substring(1);
+            if (method.StartsWith("/") && AcceptSlashInMethodName) method = method.Substring(1);
 
             if (!controllers.ContainsKey(method)) throw new UnkownMethod(method);
             var info = controllers[method];
@@ -150,9 +153,9 @@ namespace Simple.BotUtils.Controllers
         {
             // Get constructors
             var constructors = info.ControllerType.GetConstructors()
-                                                  .OrderByDescending( o=> o.GetParameters().Length)
+                                                  .OrderByDescending(o => o.GetParameters().Length)
                                                   .ToArray();
-            if(constructors.Length == 0)
+            if (constructors.Length == 0)
             {
                 throw new Exception($"No available constructors for {info.Name}");
             }
@@ -171,8 +174,45 @@ namespace Simple.BotUtils.Controllers
             var instance = (IController)ctor.Invoke(ctorArgs);
             // Execute
             var objParams = convertParams(methodInfo, parameters);
-            return (T)methodInfo.Invoke(instance, objParams);
+
+            try
+            {
+                if (methodInfo.ReturnType == typeof(Task))
+                {
+                    var task = (Task)methodInfo.Invoke(instance, objParams);
+                    task.Wait();
+                    return default(T);
+                }
+                else if (methodInfo.ReturnType.BaseType == typeof(Task) && methodInfo.ReturnType.IsGenericType)
+                {
+                    var generic = methodInfo.ReturnType.GetGenericArguments()[0];
+
+                    if (generic == typeof(T))
+                    {
+                        var task = (Task<T>)methodInfo.Invoke(instance, objParams);
+                        return task.Result;
+                    }
+                    else
+                    {
+                        var task = (Task)methodInfo.Invoke(instance, objParams);
+                        task.Wait();
+                        return default;
+                    }
+                }
+                else
+                {
+                    return (T)methodInfo.Invoke(instance, objParams);
+                }
+            }
+            catch (TargetInvocationException ex) { throw ex.InnerException; }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerExceptions.Count == 1) throw ex.InnerExceptions[0];
+                throw;
+            }
+            catch { throw; }
         }
+
         private object[] convertParams(MethodInfo methodInfo, object[] parameters)
         {
             var invariant = System.Globalization.CultureInfo.InvariantCulture;
