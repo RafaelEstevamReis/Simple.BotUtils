@@ -62,6 +62,8 @@ namespace Simple.BotUtils.Controllers
                 string name = method.Name.ToLower();
                 if (name.EndsWith("async")) name = name.Substring(0, name.Length - 5);
 
+                if (method.GetCustomAttributes(false).OfType<IgnoreAttribute>().Any()) continue;
+
                 var nameAttr = method.GetCustomAttributes(false).OfType<MethodNameAttribute>().FirstOrDefault();
                 if (nameAttr != null) name = nameAttr.MethodName.ToLower();
 
