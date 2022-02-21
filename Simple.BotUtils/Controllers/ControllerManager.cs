@@ -20,6 +20,9 @@ namespace Simple.BotUtils.Controllers
             controllers = new Dictionary<string, EndpointInfo>();
         }
 
+        public string[] GetMethodsName()
+            => controllers.Keys.ToArray();
+        [Obsolete("Use GetMethodsName() instead")]
         public string[] GetMethods()
             => controllers.Keys.ToArray();
         public EndpointInfo[] GetMethodsInfo()
