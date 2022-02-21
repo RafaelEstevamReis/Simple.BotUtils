@@ -1,7 +1,9 @@
 ﻿using Simple.BotUtils.Controllers;
 using Simple.BotUtils.Data;
 using Simple.BotUtils.DI;
+using Simple.BotUtils.Jobs;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Simple.BotUtils.Test
@@ -61,6 +63,14 @@ namespace Simple.BotUtils.Test
             ctorCtrl.Execute("/ShowMyName");
             // Tasks ignore Async name
             ctorCtrl.Execute("DoTask");
+
+            // Process tasks
+            var cancellationSource = new CancellationTokenSource();
+            var scheduler = new Scheduler();
+            scheduler.Error += (s, err) => Console.WriteLine($"Error on [{err.Info}]: {err.Exception.Message}");
+            scheduler.Add(new PingJob());
+
+            scheduler.RunJobsSynchronously(cancellationSource.Token);
         }
     }
 
@@ -115,12 +125,32 @@ namespace Simple.BotUtils.Test
         {
             Console.WriteLine("Async");
             //throw new Exception("test");
-            return await Task.Run(() => "Async" );
+            return await Task.Run(() => "Async");
         }
 
         [Ignore]
         public void ThisMethodIsNotAccessible() { }
         public static void StaticMethodsAreNotAvailable() { }
+    }
+
+    public class PingJob : JobBase
+    {
+        public PingJob()
+        {
+            CanBeScheduled = true;
+            RunOnStartUp = true;
+            CanBeInvoked = true;
+            StartEvery = TimeSpan.FromSeconds(5);
+        }
+
+        public override async Task ExecuteAsync(ExecutionTrigger trigger, object parameter)
+        {
+            Console.WriteLine($"Execute Job: {trigger}");
+
+            if (trigger == ExecutionTrigger.Scheduled) throw new NotSupportedException();
+
+            return;
+        }
     }
 
 }
