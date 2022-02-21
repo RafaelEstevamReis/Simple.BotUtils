@@ -15,6 +15,9 @@ namespace Simple.BotUtils.Controllers
         {
             MethodName = name;
         }
-
     }
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    public class IgnoreAttribute : Attribute
+    { }
 }
