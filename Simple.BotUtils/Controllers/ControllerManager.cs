@@ -22,6 +22,8 @@ namespace Simple.BotUtils.Controllers
 
         public string[] GetMethods()
             => controllers.Keys.ToArray();
+        public EndpointInfo[] GetMethodsInfo()
+            => controllers.Values.ToArray();
 
         public ControllerManager AddControllers(Assembly assembly)
         {
