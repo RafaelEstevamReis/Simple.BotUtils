@@ -53,7 +53,7 @@ namespace Simple.BotUtils.Test
 
             // Controllers with constructors are instantiated from DI
             var ctorCtrl = new ControllerManager()
-                       .AddController<ControllersWithCtor>();
+                       .AddController<AdvancedControllers>();
 
             ctorCtrl.Execute("ShowMyName");
             // Support Slash commands
@@ -99,11 +99,11 @@ namespace Simple.BotUtils.Test
             Console.WriteLine(string.Join(' ', contents));
         }
     }
-    public class ControllersWithCtor : IController
+    public class AdvancedControllers : IController
     {
         private readonly MyConfig config;
 
-        public ControllersWithCtor(MyConfig config)
+        public AdvancedControllers(MyConfig config)
         {
             this.config = config;
         }
@@ -117,6 +117,9 @@ namespace Simple.BotUtils.Test
             //throw new Exception("test");
             return await Task.Run(() => "Async" );
         }
+
+        [Ignore]
+        public void ThisMethodIsNotAccessible() { }
 
     }
 
