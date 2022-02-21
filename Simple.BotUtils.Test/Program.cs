@@ -120,7 +120,7 @@ namespace Simple.BotUtils.Test
 
         [Ignore]
         public void ThisMethodIsNotAccessible() { }
-
+        public static void StaticMethodsAreNotAvailable() { }
     }
 
 }
