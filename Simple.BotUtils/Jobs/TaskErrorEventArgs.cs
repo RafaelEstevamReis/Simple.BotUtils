@@ -12,6 +12,5 @@ namespace Simple.BotUtils.Jobs
             Info = info;
             Exception = ex;
         }
-
     }
 }
