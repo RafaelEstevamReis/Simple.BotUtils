@@ -57,6 +57,8 @@ namespace Simple.BotUtils.Controllers
                 if (method.Name == "MemberwiseClone") continue;
                 if (method.Name == "ToString") continue;
 
+                if (method.IsStatic) continue;
+
                 string name = method.Name.ToLower();
                 if (name.EndsWith("async")) name = name.Substring(0, name.Length - 5);
 
