@@ -88,12 +88,6 @@ namespace Simple.BotUtils.Jobs
             }
             catch (AggregateException ex)
             {
-                if (ex.InnerExceptions.Count == 1)
-                {
-                    raiseErrorEvent(new TaskErrorEventArgs(info, ex.InnerException));
-                    return;
-                }
-
                 foreach (var e in ex.InnerExceptions)
                 {
                     raiseErrorEvent(new TaskErrorEventArgs(info, e));
