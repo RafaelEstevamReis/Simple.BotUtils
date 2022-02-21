@@ -14,6 +14,8 @@ namespace Simple.BotUtils.Jobs
             jobs = new Dictionary<Type, JobInfo>();
         }
 
+        public event EventHandler<TaskErrorEventArgs> Error;
+
         public Scheduler Add<T>(T job) where T : IJob
         {
             return Add(typeof(T), job);
@@ -39,8 +41,7 @@ namespace Simple.BotUtils.Jobs
                 if (!v.CanRun) continue;
                 if (!v.SchedulerJob.RunOnStartUp) continue;
 
-                v.SystemTask = v.SchedulerJob.ExecuteAsync(ExecutionTrigger.Startup, null);
-                v.LastExecution = DateTime.Now;
+                runJob(v, ExecutionTrigger.Startup, null);
             }
         }
 
@@ -54,8 +55,7 @@ namespace Simple.BotUtils.Jobs
                 var time = DateTime.Now - v.LastExecution;
                 if (time < v.SchedulerJob.StartEvery) continue;
 
-                v.SystemTask = v.SchedulerJob.ExecuteAsync(ExecutionTrigger.Scheduled, null);
-                v.LastExecution = DateTime.Now;
+                runJob(v, ExecutionTrigger.Scheduled, null);
             }
         }
         public bool RunJob<T>(object parameter)
@@ -67,11 +67,48 @@ namespace Simple.BotUtils.Jobs
             if (!info.CanRun) return false;
             if (!info.SchedulerJob.CanBeInvoked) return false;
 
-            info.SystemTask = info.SchedulerJob.ExecuteAsync(ExecutionTrigger.Invoked, parameter);
-            info.LastExecution = DateTime.Now;
+            runJob(info, ExecutionTrigger.Invoked, parameter);
 
             return true;
         }
+
+        private void runJob(JobInfo info, ExecutionTrigger trigger, object parameter)
+        {
+            var task = info.SchedulerJob.ExecuteAsync(trigger, parameter);
+            info.LastExecution = DateTime.Now;
+            info.SystemTask = task;
+
+            collectTaskErrors(info, task);
+        }
+        private void collectTaskErrors(JobInfo info, Task task)
+        {
+            try
+            {
+                task.Wait();
+            }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerExceptions.Count == 1)
+                {
+                    raiseErrorEvent(new TaskErrorEventArgs(info, ex.InnerException));
+                    return;
+                }
+
+                foreach (var e in ex.InnerExceptions)
+                {
+                    raiseErrorEvent(new TaskErrorEventArgs(info, e));
+                }
+            }
+            catch (Exception ex)
+            {
+                raiseErrorEvent(new TaskErrorEventArgs(info, ex));
+            }
+        }
+        private void raiseErrorEvent(TaskErrorEventArgs taskErrorEventArgs)
+        {
+            Error?.Invoke(this, taskErrorEventArgs);
+        }
+
         /// <summary>
         /// Runs Synchronously calling RunTimedJobs() every 10 seconds
         /// </summary>
