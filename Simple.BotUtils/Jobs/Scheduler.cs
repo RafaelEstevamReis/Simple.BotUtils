@@ -9,12 +9,12 @@ namespace Simple.BotUtils.Jobs
     {
         readonly Dictionary<Type, JobInfo> jobs;
 
+        public event EventHandler<TaskErrorEventArgs> Error;
+
         public Scheduler()
         {
             jobs = new Dictionary<Type, JobInfo>();
         }
-
-        public event EventHandler<TaskErrorEventArgs> Error;
 
         public Scheduler Add<T>(T job) where T : IJob
         {
