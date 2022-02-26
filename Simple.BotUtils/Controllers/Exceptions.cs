@@ -39,4 +39,25 @@ namespace Simple.BotUtils.Controllers
             MethodName = methodName;
         }
     }
+    public class FilteredException : Exception
+    {
+        public string Method { get; }
+        public FilterException BlockReason { get; }
+        public Attribute[] Attributes { get; }
+        public object[] Args { get; }
+
+        public FilteredException(FilterEventArgs filter)
+            : base("Method blocked by filter")
+        {
+            Method = filter.Method;
+            BlockReason = filter.BlockReason;
+            Attributes = filter.Attrbiutes;
+            Args = filter.Args;
+        }
+
+    }
+    public abstract class FilterException : Exception
+    {
+
+    }
 }
