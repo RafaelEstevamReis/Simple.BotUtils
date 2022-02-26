@@ -15,6 +15,8 @@ namespace Simple.BotUtils.Controllers
         Dictionary<string, EndpointInfo> controllers;
         public bool AcceptSlashInMethodName { get; set; }
 
+        public event EventHandler<FilterEventArgs> Filter;
+
         public ControllerManager()
         {
             controllers = new Dictionary<string, EndpointInfo>();
@@ -183,6 +185,27 @@ namespace Simple.BotUtils.Controllers
             var instance = (IController)ctor.Invoke(ctorArgs);
             // Execute
             var objParams = convertParams(methodInfo, parameters);
+
+            // run filters
+            if (Filter != null)
+            {
+                var ev = new FilterEventArgs()
+                {
+                    Method = methodInfo.Name,
+                    Args = objParams,
+                    Attrbiutes = methodInfo.GetCustomAttributes(false).Cast<Attribute>().ToArray(),
+                    BlockReason = null,
+                };
+
+                foreach (EventHandler<FilterEventArgs> f in Filter.GetInvocationList())
+                {
+                    f.Invoke(this, ev);
+                    if (ev.BlockReason != null)
+                    {
+                        throw new FilteredException(ev);
+                    }
+                }
+            }
 
             try
             {
