@@ -18,7 +18,7 @@ namespace Simple.BotUtils.Test.ScheduleSample
         {
             Console.WriteLine($"Execute Job: {trigger}");
 
-            if (trigger == ExecutionTrigger.Scheduled) throw new NotSupportedException();
+            //if (trigger == ExecutionTrigger.Scheduled) throw new NotSupportedException();
 
             return;
         }
