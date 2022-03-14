@@ -34,7 +34,9 @@ namespace Simple.BotUtils.Data
         protected static T LoadJson<T>(string filePath, T template)
             where T : IConfigBase
         {
-            return JsonSerializer.LoadOrCreate(filePath, template);
+            var obj = JsonSerializer.LoadOrCreate(filePath, template);
+            obj.FilePath = filePath;
+            return obj;
         }
 
         #endregion
