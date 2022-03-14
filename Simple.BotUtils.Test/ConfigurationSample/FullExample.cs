@@ -16,7 +16,8 @@ namespace ConfigurationSample
             args = new string[] { "-a", "nothing", "-n", "da-bot", "--MyLongNumber", "684261", "--MyNegativeNumber", "\"-123456\"" };
 
             // load my config from Disk
-            var cfg = MyConfig.Load("cfg.xml");
+            //var cfg = MyConfig.Load("cfg.xml");
+            var cfg = MyConfig.Load("cfg.json");
 
             // Apply args
             ArgumentParser.ParseInto(args, cfg);
