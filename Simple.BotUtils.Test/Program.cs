@@ -5,6 +5,7 @@
     .AddOption("Controller Example")
     .AddOption("Schedule Example")
     .AddOption("Interactive Menu Example")
+    .AddOption("Controller with Authorization Example")
     ;
 
 var opt = menu.ShowMenu(true);
@@ -22,6 +23,10 @@ switch (opt)
 
     case 3:
         TerminalSamples.InteractiveMenuExample.ProgramMain(args);
+        break;
+
+    case 4:
+        ControllerSample.AuthorizedControllers.ProgramMain(args);
         break;
 }
 
