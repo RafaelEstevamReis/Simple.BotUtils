@@ -1,6 +1,5 @@
 ﻿using Simple.BotUtils.Controllers;
 using System;
-using System.Linq;
 
 namespace ControllerSample
 {
@@ -12,17 +11,17 @@ namespace ControllerSample
                          .AddController<Controllers>();
             ctrl.Filter += Ctrl_Filter;
 
-
+            User user = null;
             string message = "ShowInfoPublic abc";
-            ctrl.ExecuteFromText(context: (User)null, text: message);
+            ctrl.ExecuteFromText(context: user, text: message);
 
             message = "ShowInfoPrivate abc";
-            ctrl.ExecuteFromText(context: (User)null, text: message);
+            ctrl.ExecuteFromText(context: user, text: message);
         }
 
         private static void Ctrl_Filter(object sender, FilterEventArgs e)
         {
-            var user = e.Args[0] as User;
+            var user = e.GetArg<User>();
             if (e.HasAttribute<AuthorizeAttribute>() && user == null)
             {
                 e.BlockReason = new Unauthorized();
