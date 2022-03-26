@@ -16,7 +16,17 @@ namespace ControllerSample
             ctrl.ExecuteFromText(context: user, text: message);
 
             message = "ShowInfoPrivate abc";
-            ctrl.ExecuteFromText(context: user, text: message);
+            try
+            {
+                ctrl.ExecuteFromText(context: user, text: message);
+            }
+            catch (FilteredException ex)
+            {
+
+            }
+            catch (Exception ex)
+            {
+            }
         }
 
         private static void Ctrl_Filter(object sender, FilterEventArgs e)
