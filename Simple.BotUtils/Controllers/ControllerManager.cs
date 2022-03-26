@@ -286,6 +286,12 @@ namespace Simple.BotUtils.Controllers
 
                     break; // PARAMS is aways last
                 }
+                else if (parameters[pCount] == null)
+                {
+                    // ??  
+                    p = parameters[pCount];
+                    pCount++;
+                }
                 else if (parameters[pCount].GetType() == paramInfo[i].ParameterType)
                 {
                     // put all remaining args as array
