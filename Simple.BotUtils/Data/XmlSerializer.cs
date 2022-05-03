@@ -14,6 +14,7 @@ namespace Simple.BotUtils.Data
         {
             var serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
             serializer.Serialize(source, obj);
+            source.Flush();
         }
 
         public static bool TryLoadFile<T>(string fileName, out T value)
