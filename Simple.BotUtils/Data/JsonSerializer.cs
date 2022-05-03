@@ -17,6 +17,7 @@ namespace Simple.BotUtils.Data
             var sr = new StreamWriter(source);
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
             sr.Write(json);
+            sr.Flush();
         }
 
 #if !NETSTANDARD1_0
