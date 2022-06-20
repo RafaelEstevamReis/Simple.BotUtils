@@ -18,7 +18,8 @@
 
 Some Bots Utilities containing common features such as Dependency Injection, Job Scheduler, MemoryCache and Argument Parser
 
-Lightweight, simple, compatible, and depends only Newtonsoft.Json
+Lightweight, simple, compatible, and depends only Newtonsoft.Json.
+
 Works for small projects in any platform (see compatibility list)
 
 ## Compatibility List:
