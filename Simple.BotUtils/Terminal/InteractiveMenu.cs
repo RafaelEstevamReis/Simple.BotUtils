@@ -140,7 +140,10 @@ namespace Simple.BotUtils.Terminal
                 // process HotKeys
                 for (int i = 0; i < Options.Count; i++)
                 {
-                    if (Options[i].HotKey.HasValue && Options[i].HotKey.Value == key.Key) return i;
+                    if (Options[i] == null) continue;
+                    if (Options[i].HotKey == null) continue;
+
+                    if (Options[i].HotKey.Value == key.Key) return i;
                 }
                 // None, just ignore and do not redraw
                 skipDraw = true;
@@ -149,9 +152,7 @@ namespace Simple.BotUtils.Terminal
 
         public class MenuOption
         {
-            public MenuOption() { }
-
-            public string Text { get; set; }
+            public string Text { get; set; } = string.Empty;
             public ConsoleKey? HotKey { get; set; }
         }
 
