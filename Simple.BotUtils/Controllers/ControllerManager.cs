@@ -12,7 +12,7 @@ namespace Simple.BotUtils.Controllers
 {
     public class ControllerManager
     {
-        Dictionary<string, EndpointInfo> controllers;
+        readonly Dictionary<string, EndpointInfo> controllers;
         public bool AcceptSlashInMethodName { get; set; }
 
         public event EventHandler<FilterEventArgs> Filter;
@@ -214,7 +214,7 @@ namespace Simple.BotUtils.Controllers
                 if (methodInfo.ReturnType == typeof(Task))
                 {
                     var task = (Task)result;
-                    task.Wait();
+                    task?.Wait();
                     return default;
                 }
                 else if (methodInfo.ReturnType.BaseType == typeof(Task) && methodInfo.ReturnType.IsGenericType)
@@ -228,7 +228,7 @@ namespace Simple.BotUtils.Controllers
                     else
                     {
                         var task = (Task)result;
-                        task.Wait();
+                        task?.Wait();
                         return default;
                     }
                 }
