@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,6 +33,17 @@ namespace Simple.BotUtils.Jobs
 
         public int JobCount => jobs.Count;
 
+        public IEnumerable<string> GetRegisteredTypes()
+        {
+            // Ensures the enumeration completition before return
+            return jobs.Keys.Select(o => o.FullName).ToArray();
+        }
+        public IEnumerable<JobInfo> GetRegisteredJobs()
+        {
+            // Ensures the enumeration completition before return
+            return jobs.Values.ToArray();
+        }
+
         bool hasStartExecuted;
         public void RunStartJobs()
         {
@@ -58,12 +70,17 @@ namespace Simple.BotUtils.Jobs
                 runJob(v, ExecutionTrigger.Scheduled, null);
             }
         }
+       
+        
         public bool RunJob<T>(object parameter)
         {
             var t = typeof(T);
             if (!jobs.TryGetValue(t, out JobInfo info)) return false;
 
-
+            return RunJob(info, parameter);
+        }
+        public bool RunJob(JobInfo info, object parameter)
+        {
             if (!info.CanRun) return false;
             if (!info.SchedulerJob.CanBeInvoked) return false;
 
