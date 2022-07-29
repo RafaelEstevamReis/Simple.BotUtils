@@ -9,6 +9,11 @@
     ;
 
 var opt = menu.ShowMenu(true);
+
+System.Console.Clear();
+System.Console.WriteLine("## " + menu.Options[opt] + " ##");
+System.Console.WriteLine();
+
 switch (opt)
 {
     case 0:
