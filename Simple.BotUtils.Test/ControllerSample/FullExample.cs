@@ -8,6 +8,10 @@ namespace ControllerSample
     {
         public static void ProgramMain(string[] args)
         {
+            // Inject config for later use
+            var cfg = Simple.BotUtils.Test.MyConfig.Load("cfg.json");
+            Simple.BotUtils.DI.Injector.AddSingleton(cfg);
+
             // Call Methods
             var ctrl = new ControllerManager()
                        .AddController<MyControllers>();
@@ -44,6 +48,8 @@ namespace ControllerSample
             // Tasks ignore Async name
             ctorCtrl.Execute("DoTask");
 
+            // CallerInfo aware methods
+            ctorCtrl.Execute("SelfAware");
         }
 
     }
