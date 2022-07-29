@@ -13,6 +13,7 @@ namespace Simple.BotUtils.Controllers
     public class ControllerManager
     {
         readonly Dictionary<string, EndpointInfo> controllers;
+        readonly Dictionary<string, string> aliases;
         public bool AcceptSlashInMethodName { get; set; }
 
         public event EventHandler<FilterEventArgs> Filter;
@@ -20,6 +21,7 @@ namespace Simple.BotUtils.Controllers
         public ControllerManager()
         {
             controllers = new Dictionary<string, EndpointInfo>();
+            aliases = new Dictionary<string, string>();
         }
 
         public string[] GetMethodsName()
@@ -63,17 +65,25 @@ namespace Simple.BotUtils.Controllers
                 if (method.Name == "GetType") continue;
                 if (method.Name == "MemberwiseClone") continue;
                 if (method.Name == "ToString") continue;
-
+                // do not bind static methods
                 if (method.IsStatic) continue;
-
-                string name = method.Name.ToLower();
-                if (name.EndsWith("async")) name = name.Substring(0, name.Length - 5);
-
+                // do not bind Ignore methods
                 if (method.GetCustomAttributes(false).OfType<IgnoreAttribute>().Any()) continue;
 
+                // Get method name
+                string name = method.Name.ToLower();
+                if (name.EndsWith("async")) name = name.Substring(0, name.Length - 5);
+                // override name
                 var nameAttr = method.GetCustomAttributes(false).OfType<MethodNameAttribute>().FirstOrDefault();
                 if (nameAttr != null) name = nameAttr.MethodName.ToLower();
 
+                // get alisases
+                var aliasesNames = method.GetCustomAttributes(false)
+                                         .OfType<MethodAliasAttribute>()
+                                         .SelectMany(o => o.Alisases);
+                foreach (var a in aliasesNames) aliases[a] = name;
+
+                // bind
                 if (!controllers.ContainsKey(name)) controllers.Add(name, new EndpointInfo() { ControllerType = t });
 
                 var ctrl = controllers[name];
@@ -154,9 +164,10 @@ namespace Simple.BotUtils.Controllers
         }
         private int countParameters(MethodInfo m)
         {
-
             return m.GetParameters().Where(p => !p.GetCustomAttributes(false)
                                                   .Any(a => a is FromDIAttribute))
+                                    .Where(p => p.ParameterType != typeof(EndpointInfo))
+                                    .Where(p => p.ParameterType != typeof(MethodInfo))
                                     .Count();
         }
 
@@ -178,13 +189,18 @@ namespace Simple.BotUtils.Controllers
             for (int i = 0; i < ctorParams.Length; i++)
             {
                 var type = ctorParams[i].ParameterType;
+                if(type == typeof(EndpointInfo))
+                {
+                    ctorArgs[i] = info;
+                    continue;
+                }
                 ctorArgs[i] = Injector.Get(type);
             }
 
             // instantiate
             var instance = (IController)ctor.Invoke(ctorArgs);
             // Execute
-            var objParams = convertParams(methodInfo, parameters);
+            var objParams = convertParams(info, methodInfo, parameters);
 
             // run filters
             if (Filter != null)
@@ -246,7 +262,7 @@ namespace Simple.BotUtils.Controllers
             catch { throw; }
         }
 
-        private object[] convertParams(MethodInfo methodInfo, object[] parameters)
+        private object[] convertParams(EndpointInfo info, MethodInfo methodInfo, object[] parameters)
         {
             var invariant = System.Globalization.CultureInfo.InvariantCulture;
             var paramInfo = methodInfo.GetParameters();
@@ -285,6 +301,14 @@ namespace Simple.BotUtils.Controllers
                     }
 
                     break; // PARAMS is aways last
+                }
+                else if (paramInfo[i].ParameterType == typeof(EndpointInfo))
+                {
+                    p = info;
+                }
+                else if (paramInfo[i].ParameterType == typeof(MethodInfo))
+                {
+                    p = methodInfo;
                 }
                 else if (parameters[pCount] == null)
                 {
