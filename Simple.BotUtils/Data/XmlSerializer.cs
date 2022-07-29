@@ -28,7 +28,7 @@ namespace Simple.BotUtils.Data
         }
         public static T LoadOrCreate<T>(string fileName, T template)
         {
-            if (TryLoadFile(fileName, out T value)) return value;
+            if (TryLoadFile(fileName, out T value)) return value ?? template;
 
             ToFile(fileName, template);
             return template;
