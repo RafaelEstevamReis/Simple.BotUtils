@@ -35,7 +35,7 @@ namespace Simple.BotUtils.Data
             where T : IConfigBase
         {
             var obj = JsonSerializer.LoadOrCreate(filePath, template);
-            obj.FilePath = filePath;
+            if(obj != null) obj.FilePath = filePath;
             return obj;
         }
 
