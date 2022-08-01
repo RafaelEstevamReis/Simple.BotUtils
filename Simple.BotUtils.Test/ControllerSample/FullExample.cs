@@ -48,6 +48,10 @@ namespace ControllerSample
             // Tasks ignore Async name
             ctorCtrl.Execute("DoTask");
 
+            // Alias method
+            ctorCtrl.Execute("little_1");
+            ctorCtrl.Execute("big_1");
+
             // CallerInfo aware methods
             ctorCtrl.Execute("SelfAware");
         }

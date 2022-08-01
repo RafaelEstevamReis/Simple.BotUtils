@@ -144,6 +144,12 @@ namespace Simple.BotUtils.Controllers
             method = method.ToLower();
             if (method.StartsWith("/") && AcceptSlashInMethodName) method = method.Substring(1);
 
+            // search aliases (recursive?)
+            if (!controllers.ContainsKey(method) && aliases.ContainsKey(method))
+            {
+                method = aliases[method];
+            }
+
             if (!controllers.ContainsKey(method)) throw new UnkownMethod(method);
             var info = controllers[method];
 
@@ -189,7 +195,7 @@ namespace Simple.BotUtils.Controllers
             for (int i = 0; i < ctorParams.Length; i++)
             {
                 var type = ctorParams[i].ParameterType;
-                if(type == typeof(EndpointInfo))
+                if (type == typeof(EndpointInfo))
                 {
                     ctorArgs[i] = info;
                     continue;
