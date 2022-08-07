@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Simple.BotUtils.Data
 {
     /// <summary>
-    /// A simples linked list that removes the first ones to limit the list size
+    /// A simple and limited linked list implementation that behaves like a circular list, removing old entries
     /// </summary>
     public class LastList<T> : IEnumerable<T>, ICollection<T>
     {
@@ -43,6 +43,14 @@ namespace Simple.BotUtils.Data
             => list.Contains(item);
         public void CopyTo(T[] array, int arrayIndex)
             => list.CopyTo(array, arrayIndex);
+        // Size is known, there is no need to alocate a LargeArrayBuilder
+        public T[] ToArray()
+        {
+            var arr = new T[Count];
+            CopyTo(arr, 0);
+            return arr;
+        }
+
         public bool Remove(T item)
             => list.Remove(item);
 
