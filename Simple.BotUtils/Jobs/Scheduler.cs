@@ -130,11 +130,10 @@ namespace Simple.BotUtils.Jobs
 
             while (true)
             {
-                //int timeDelaySeconds = 10; // 10s
 #if NET40
-                for (int i = 0; i < timeDelaySeconds; i++)
+                for (int i = 0; i < timeDelaySeconds * 10; i++)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(100);
                     if (token.IsCancellationRequested) break;
                 }
 #else
