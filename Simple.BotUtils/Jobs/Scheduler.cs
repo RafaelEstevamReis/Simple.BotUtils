@@ -8,6 +8,7 @@ namespace Simple.BotUtils.Jobs
 {
     public class Scheduler
     {
+        private const int timeDelaySeconds = 10; // 10s
         readonly Dictionary<Type, JobInfo> jobs;
 
         public event EventHandler<TaskErrorEventArgs> Error;
@@ -129,7 +130,7 @@ namespace Simple.BotUtils.Jobs
 
             while (true)
             {
-                int timeDelaySeconds = 10; // 10s
+                //int timeDelaySeconds = 10; // 10s
 #if NET40
                 for (int i = 0; i < timeDelaySeconds; i++)
                 {
