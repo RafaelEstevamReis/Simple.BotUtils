@@ -34,7 +34,7 @@ namespace Simple.BotUtils.Controllers
 
         public ControllerManager AddControllers(Assembly assembly)
         {
-            var types = Helpers.AssemblyHelper.GetClassesOfType<IController>(assembly);
+            var types = Helpers.TypeHelper.GetClassesOfType<IController>(assembly);
 
             foreach (var t in types)
             {
