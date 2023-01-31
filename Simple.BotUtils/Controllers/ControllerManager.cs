@@ -34,10 +34,7 @@ namespace Simple.BotUtils.Controllers
 
         public ControllerManager AddControllers(Assembly assembly)
         {
-            var interfaceType = typeof(IController);
-            var types = assembly.GetTypes()
-                            .Where(t => t.IsClass)
-                            .Where(t => interfaceType.IsAssignableFrom(t));
+            var types = Helpers.AssemblyHelper.GetClassesOfType<IController>(assembly);
 
             foreach (var t in types)
             {
