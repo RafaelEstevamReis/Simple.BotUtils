@@ -27,7 +27,7 @@ Works for small projects in any platform (see compatibility list)
 Direct targets:
 * Net Core 3.1, and 2.1
 * Net Standard 1.0*, and 2.0
-* Net 6.0 (and 5.0)
+* Net 6.0, and 7.0
 * Net Framework 4.6.1, 4.7.2, and 4.8
   
 Indirect Support from Net Standard 2.0:
