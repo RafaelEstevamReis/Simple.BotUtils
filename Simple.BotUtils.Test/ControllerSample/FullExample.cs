@@ -38,6 +38,7 @@ namespace ControllerSample
 
             // Controllers with constructors are instantiated from DI
             var ctorCtrl = new ControllerManager()
+                       .AddController<ControllersWithJob>()
                        .AddController<AdvancedControllers>();
             ctorCtrl.Filter += (s, ev) => { };
 

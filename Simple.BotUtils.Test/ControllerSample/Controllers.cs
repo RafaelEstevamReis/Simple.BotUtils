@@ -1,4 +1,5 @@
 ﻿using Simple.BotUtils.Controllers;
+using Simple.BotUtils.Jobs;
 using System;
 using System.Threading.Tasks;
 
@@ -43,11 +44,27 @@ namespace Simple.BotUtils.Test.ControllerSample
             return await Task.Run(() => "Async");
         }
 
-        public void SelfAware(ControllerManager.EndpointInfo endpoint, System.Reflection.MethodInfo method) 
+        public void SelfAware(ControllerManager.EndpointInfo endpoint, System.Reflection.MethodInfo method)
             => Console.WriteLine($"Endpoint Name: {endpoint.Name} | MethodName: {method.Name}");
 
         [Ignore]
         public void ThisMethodIsNotAccessible() { }
         public static void StaticMethodsAreNotAvailable() { }
     }
+    public class ControllersWithJob : IController, IJob
+    {
+        public bool CanBeInvoked => false;
+
+        public bool CanBeScheduled => false;
+
+        public bool RunOnStartUp => false;
+
+        public TimeSpan StartEvery => TimeSpan.FromMinutes(10);
+
+        public async Task ExecuteAsync(ExecutionTrigger trigger, object parameter)
+        {
+            await Task.CompletedTask;
+        }
+    }
+
 }
