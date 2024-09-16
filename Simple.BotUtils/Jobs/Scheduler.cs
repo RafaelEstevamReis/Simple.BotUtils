@@ -137,7 +137,7 @@ namespace Simple.BotUtils.Jobs
                     if (token.IsCancellationRequested) break;
                 }
 #else
-                Task.Delay(timeDelaySeconds * 10, token).Wait();
+                Task.Delay(timeDelaySeconds * 10, token).Wait(token);
 #endif
                 if (token.IsCancellationRequested) break;
                 RunTimedJobs();
