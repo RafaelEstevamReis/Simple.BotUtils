@@ -1,6 +1,7 @@
 ﻿#if !NETSTANDARD1_0
 
 using Simple.BotUtils.DI;
+using Simple.BotUtils.Jobs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,6 +55,13 @@ namespace Simple.BotUtils.Controllers
         }
         private void addMethods(Type t, MethodInfo[] methods)
         {
+            // ignore internal override methods
+            bool isIJOB = typeof(IJob).IsAssignableFrom(t);
+            bool isIConfigBase = false;
+#if !NETSTANDARD1_0
+            isIConfigBase = typeof(Data.IConfigBase).IsAssignableFrom(t);
+#endif
+
             foreach (var method in methods)
             {
                 // do not bind "object" methods
@@ -66,6 +74,19 @@ namespace Simple.BotUtils.Controllers
                 if (method.IsStatic) continue;
                 // do not bind Ignore methods
                 if (method.GetCustomAttributes(false).OfType<IgnoreAttribute>().Any()) continue;
+
+                // ignore Job's override methods
+                if (isIJOB)
+                {
+                    if (method.Name.Equals("Execute", StringComparison.InvariantCultureIgnoreCase)) continue;
+                    if (method.Name.Equals("ExecuteAsync", StringComparison.InvariantCultureIgnoreCase)) continue;
+                }
+                // ignore Config's override methods
+                if (isIConfigBase)
+                {
+                    if (method.Name.Equals("load", StringComparison.InvariantCultureIgnoreCase)) continue;
+                }
+
 
                 // Get method name
                 string name = method.Name.ToLower();
