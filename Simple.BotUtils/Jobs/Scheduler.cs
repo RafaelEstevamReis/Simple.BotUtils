@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Simple.BotUtils.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -60,6 +61,7 @@ namespace Simple.BotUtils.Jobs
 
         public void RunTimedJobs()
         {
+            List<Exception> lstex = new List<Exception>();
             foreach (var v in jobs.Values)
             {
                 if (!v.CanRun) continue;
@@ -68,11 +70,19 @@ namespace Simple.BotUtils.Jobs
                 var time = DateTime.Now - v.LastExecution;
                 if (time < v.SchedulerJob.StartEvery) continue;
 
-                runJob(v, ExecutionTrigger.Scheduled, null);
+                try
+                {
+                    runJob(v, ExecutionTrigger.Scheduled, null);
+                }
+                catch (Exception ex)
+                {
+                    lstex.Add(new Exception("Error while running job: " + v.SchedulerJob, ex));
+                }
             }
+            if (lstex.Count > 0) throw new AggregateException(lstex.ToArray());
         }
-       
-        
+
+
         public bool RunJob<T>(object parameter)
         {
             var t = typeof(T);
