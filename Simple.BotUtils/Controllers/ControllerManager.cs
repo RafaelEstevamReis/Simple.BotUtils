@@ -65,6 +65,7 @@ namespace Simple.BotUtils.Controllers
             foreach (var method in methods)
             {
                 // do not bind "object" methods
+                if (method.DeclaringType.FullName == "System.Object") continue;
                 if (method.Name == "Equals") continue;
                 if (method.Name == "GetHashCode") continue;
                 if (method.Name == "GetType") continue;
@@ -74,7 +75,9 @@ namespace Simple.BotUtils.Controllers
                 if (method.IsStatic) continue;
                 // do not bind Ignore methods
                 if (method.GetCustomAttributes(false).OfType<IgnoreAttribute>().Any()) continue;
-
+                // do not bind Special
+                if (method.IsSpecialName) continue;
+                
                 // ignore Job's override methods
                 if (isIJOB)
                 {
@@ -87,10 +90,9 @@ namespace Simple.BotUtils.Controllers
                     if (method.Name.Equals("load", StringComparison.InvariantCultureIgnoreCase)) continue;
                 }
 
-
                 // Get method name
                 string name = method.Name.ToLower();
-                if (name.EndsWith("async")) name = name.Substring(0, name.Length - 5);
+                if (name.EndsWith("async", StringComparison.InvariantCultureIgnoreCase)) name = name.Substring(0, name.Length - 5);
                 // override name
                 var nameAttr = method.GetCustomAttributes(false).OfType<MethodNameAttribute>().FirstOrDefault();
                 if (nameAttr != null) name = nameAttr.MethodName.ToLower();
@@ -389,6 +391,8 @@ namespace Simple.BotUtils.Controllers
             public string Name { get; set; }
             public Type ControllerType { get; set; }
             public List<MethodInfo> Methods { get; set; }
+
+            public override string ToString() => $"{Name} [{ControllerType.Name}] Methods: {Methods.Count}";
         }
 
     }
