@@ -16,9 +16,7 @@ namespace Simple.BotUtils.Test.ScheduleSample
 
         public override async Task ExecuteAsync(ExecutionTrigger trigger, object parameter)
         {
-            Console.WriteLine($"Execute Job: {trigger}");
-
-            //if (trigger == ExecutionTrigger.Scheduled) throw new NotSupportedException();
+            Console.WriteLine($"[{trigger}] Execute Job PING");
 
             await Task.CompletedTask;
         }
