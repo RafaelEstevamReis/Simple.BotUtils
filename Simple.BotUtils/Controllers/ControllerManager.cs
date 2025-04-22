@@ -101,7 +101,7 @@ namespace Simple.BotUtils.Controllers
                 var aliasesNames = method.GetCustomAttributes(false)
                                          .OfType<MethodAliasAttribute>()
                                          .SelectMany(o => o.Alisases);
-                foreach (var a in aliasesNames) aliases[a] = name;
+                foreach (var a in aliasesNames) aliases[a.ToLower()] = name;
 
                 // bind
                 if (!controllers.ContainsKey(name)) controllers.Add(name, new EndpointInfo() { ControllerType = t });
