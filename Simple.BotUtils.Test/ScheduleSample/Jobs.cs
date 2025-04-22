@@ -20,7 +20,7 @@ namespace Simple.BotUtils.Test.ScheduleSample
 
             //if (trigger == ExecutionTrigger.Scheduled) throw new NotSupportedException();
 
-            return;
+            await Task.CompletedTask;
         }
     }
 }
