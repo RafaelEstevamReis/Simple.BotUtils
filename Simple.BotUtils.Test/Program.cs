@@ -1,4 +1,6 @@
-﻿var menu = new Simple.BotUtils.Terminal
+﻿using Simple.BotUtils;
+
+var menu = new Simple.BotUtils.Terminal
     .SimpleMenu()
     .SetCaption("Choose the sample")
     .AddOption("Configuration Example")
@@ -6,6 +8,7 @@
     .AddOption("Schedule Example")
     .AddOption("Interactive Menu Example")
     .AddOption("Controller with Authorization Example")
+    .AddOption("BotBuilder")
     ;
 
 var opt = menu.ShowMenu(true);
@@ -32,6 +35,10 @@ switch (opt)
 
     case 4:
         ControllerSample.AuthorizedControllers.ProgramMain(args);
+        break;
+
+    case 5:
+        BotBuilderSample.FullExample.ProgramMain(args);
         break;
 }
 
