@@ -155,7 +155,7 @@ public class BotBuilder : IDisposable
     public void Dispose()
     {
         startupLog("[BOT] Dispse()");
-        cancelationSource.Cancel();
+        if(!cancelationSource.IsCancellationRequested) cancelationSource.Cancel();
 
         foreach (var db in DBs) db.Dispose();
         foreach (var s in Services) s.Dispose();
