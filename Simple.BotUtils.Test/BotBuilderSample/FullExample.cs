@@ -64,7 +64,7 @@ public class FullExample
         };
         return log;
     }
-    private static IDB[] databaseBuilder(BotBuilder builder)
+    private static IEnumerable<IDB> databaseBuilder(BotBuilder builder)
     {
         return [];
     }
@@ -84,7 +84,7 @@ public class FullExample
 
         };
     }
-    private static IService[] serviceBuilder(BotBuilder builder)
+    private static IEnumerable<IService> serviceBuilder(BotBuilder builder)
     {
         return [];
     }

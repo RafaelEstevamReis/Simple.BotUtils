@@ -70,7 +70,7 @@ public class BotBuilder : IDisposable
         return this;
     }
 
-    public BotBuilder Setup3DB(Func<BotBuilder, IDB[]> dbBuilders)
+    public BotBuilder Setup3DB(Func<BotBuilder, IEnumerable<IDB>> dbBuilders)
     {
         DBs = dbBuilders(this).ToArray();
         // Startup all in parallel
@@ -107,9 +107,9 @@ public class BotBuilder : IDisposable
 
         return this;
     }
-    public BotBuilder Setup6Services(Func<BotBuilder, IService[]> services, bool addServicesToDI = false)
+    public BotBuilder Setup6Services(Func<BotBuilder, IEnumerable<IService>> services, bool addServicesToDI = false)
     {
-        Services = services(this);
+        Services = services(this).ToArray();
         foreach (var s in Services)
         {
             s.Startup();
@@ -157,7 +157,7 @@ public class BotBuilder : IDisposable
     public void Dispose()
     {
         startupLog("[BOT] Dispse()");
-        if(!cancelationSource.IsCancellationRequested) cancelationSource.Cancel();
+        if (!cancelationSource.IsCancellationRequested) cancelationSource.Cancel();
 
         foreach (var db in DBs) db.Dispose();
         foreach (var s in Services) s.Dispose();
