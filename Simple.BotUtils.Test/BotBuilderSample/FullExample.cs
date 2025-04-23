@@ -7,6 +7,7 @@ using Simple.BotUtils.Jobs;
 using Simple.BotUtils.Test;
 using Simple.BotUtils.Test.ControllerSample;
 using Simple.BotUtils.Test.ScheduleSample;
+using System;
 using System.Collections.Generic;
 
 public class FullExample
@@ -21,9 +22,11 @@ public class FullExample
            .Setup4Scheduler(schedulerBuilder)
            .Setup5Controllers(controllerBuilder)
            .Setup6Services(serviceBuilder)
+           .SetupMisc(captureControlC)
            .Run(restartOnError: false)
            ;
     }
+
     private static ILogger serilogBuilder(BotBuilder builder)
     {
         ILogger log = new LoggerConfiguration()
@@ -67,5 +70,14 @@ public class FullExample
     {
         return [];
     }
-
+    private static void captureControlC(BotBuilder builder)
+    {
+        Console.CancelKeyPress += (s, e) =>
+        {
+            e.Cancel = true; // Espera
+            var logger = Simple.BotUtils.DI.Injector.Get<ILogger>();
+            logger.Information("[CONSOLE] Break Key pressed");
+            builder.Stop();
+        };
+    }
 }
