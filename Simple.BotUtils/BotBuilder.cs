@@ -14,14 +14,13 @@ using System.Threading.Tasks;
 public class BotBuilder : IDisposable
 {
     private readonly CancellationTokenSource cancelationSource;
-    public CancellationToken cancelationToken { get; }
-
     private readonly Scheduler tasker;
     private readonly ControllerManager ctrl;
 
     public event EventHandler<LoggerArguments> BotStartupLogEvents;
     public event EventHandler<LoggerErrorArguments> BotEngineLogErrorEvents;
 
+    public CancellationToken CancelationToken { get; }
     public IConfigBase Config { get; private set; }
     public IDB[] DBs { get; private set; } = [];
     public IService[] Services { get; private set; } = [];
@@ -31,7 +30,7 @@ public class BotBuilder : IDisposable
     public BotBuilder()
     {
         cancelationSource = new CancellationTokenSource();
-        cancelationToken = cancelationSource.Token;
+        CancelationToken = cancelationSource.Token;
 
         tasker = new Scheduler();
         ctrl = new ControllerManager();
