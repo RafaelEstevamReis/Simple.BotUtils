@@ -25,7 +25,7 @@ public class Logger : ILogger
     }
 
     private static readonly Regex regex = new(@"\{([^}]+)\}");
-    internal static string MessageBuider(LogEventLevel level, string messageTemplate, params object[] propertyValues)
+    internal static string MessageBuider(LogEventLevel level, bool timeOnly, string messageTemplate, params object[] propertyValues)
     {
         var strLevel = level switch
         {
@@ -37,6 +37,7 @@ public class Logger : ILogger
             _ => "[-]",
         };
         var formattedMessage = FormatMessage(messageTemplate, propertyValues);
+        if(timeOnly) return $"[{DateTime.Now:HH:mm:ss}] {strLevel} {formattedMessage}";
         return $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff zzz}] {strLevel} {formattedMessage}";
     }
     private static string FormatMessage(string messageTemplate, object[] propertyValues)

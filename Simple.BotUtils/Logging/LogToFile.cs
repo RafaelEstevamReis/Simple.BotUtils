@@ -26,34 +26,34 @@ public class LogToFile : ILogger
 
     public void Information(string messageTemplate, params object[] propertyValues)
     {
-        WriteToFile(Logger.MessageBuider(LogEventLevel.Information, messageTemplate, propertyValues));
+        WriteToFile(Logger.MessageBuider(LogEventLevel.Information, false, messageTemplate, propertyValues));
     }
 
     public void Warning(string messageTemplate, params object[] propertyValues)
     {
-        WriteToFile(Logger.MessageBuider(LogEventLevel.Warning, messageTemplate, propertyValues));
+        WriteToFile(Logger.MessageBuider(LogEventLevel.Warning, false, messageTemplate, propertyValues));
     }
 
     public void Error(string messageTemplate, params object[] propertyValues)
     {
-        WriteToFile(Logger.MessageBuider(LogEventLevel.Error, messageTemplate, propertyValues));
+        WriteToFile(Logger.MessageBuider(LogEventLevel.Error, false, messageTemplate, propertyValues));
     }
 
     public void Error(Exception exception, string messageTemplate, params object[] propertyValues)
     {
-        var message = Logger.MessageBuider(LogEventLevel.Error, messageTemplate, propertyValues);
+        var message = Logger.MessageBuider(LogEventLevel.Error, false, messageTemplate, propertyValues);
         var fullMessage = $"{message}\nException: {exception.Message}\nStackTrace: {exception.StackTrace}";
         WriteToFile(fullMessage);
     }
 
     public void Fatal(string messageTemplate, params object[] propertyValues)
     {
-        WriteToFile(Logger.MessageBuider(LogEventLevel.Fatal, messageTemplate, propertyValues));
+        WriteToFile(Logger.MessageBuider(LogEventLevel.Fatal, false, messageTemplate, propertyValues));
     }
 
     public void Debug(string messageTemplate, params object[] propertyValues)
     {
-        WriteToFile(Logger.MessageBuider(LogEventLevel.Debug, messageTemplate, propertyValues));
+        WriteToFile(Logger.MessageBuider(LogEventLevel.Debug, false, messageTemplate, propertyValues));
     }
 
     private void WriteToFile(string message)
