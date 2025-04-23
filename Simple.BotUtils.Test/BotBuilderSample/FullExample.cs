@@ -46,9 +46,9 @@ public class FullExample
     //    };
     //    return log;
     //}
-    private static Simple.BotUtils.Logging.ILogger SimpleLogBuilder(BotBuilder builder)
+    private static ILogger SimpleLogBuilder(BotBuilder builder)
     {
-        Simple.BotUtils.Logging.ILogger log = new LoggerBuilder()
+        ILogger log = new LoggerBuilder()
             .SetMinimumLevel(LogEventLevel.Information)
             .LogToConsole()
             .LogToFile((builder.Config as MyConfig).LogPath)
