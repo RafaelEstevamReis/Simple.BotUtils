@@ -200,5 +200,4 @@ public class LoggerErrorArguments : EventArgs
     public object[] Data { get; set; }
 }
 
-
 #endif
