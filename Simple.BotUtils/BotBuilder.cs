@@ -35,6 +35,8 @@ public class BotBuilder : IDisposable
 
         tasker = new Scheduler();
         ctrl = new ControllerManager();
+
+        DI.Injector.AddSingleton(this);
     }
 
     public BotBuilder Setup1Config<T>(string configFile, string[] args)
