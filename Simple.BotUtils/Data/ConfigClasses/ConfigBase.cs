@@ -7,6 +7,7 @@ namespace Simple.BotUtils.Data
     public abstract class ConfigBase : IConfigBase
     {
         public string FilePath { get; set; }
+        public string LogPath { get; set; } = "eventlog.log";
 
         protected static T Load<T>(string filePath)
               where T : IConfigBase, new()

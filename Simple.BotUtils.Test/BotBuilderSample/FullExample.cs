@@ -1,9 +1,9 @@
 ﻿namespace BotBuilderSample;
 
-using Serilog;
 using Simple.BotUtils;
 using Simple.BotUtils.Controllers;
 using Simple.BotUtils.Jobs;
+using Simple.BotUtils.Logging;
 using Simple.BotUtils.Test;
 using Simple.BotUtils.Test.ControllerSample;
 using Simple.BotUtils.Test.ScheduleSample;
@@ -17,7 +17,8 @@ public class FullExample
         using var bot = new BotBuilder();
 
         bot.Setup1Config<MyConfig>("cfg.json", args)
-           .Setup2Logs(serilogBuilder)
+           //.Setup2Logs(serilogBuilder)
+           .Setup2Logs(SimpleLogBuilder)
            .Setup3DB(databaseBuilder)
            .Setup4Scheduler(schedulerBuilder)
            .Setup5Controllers(controllerBuilder)
@@ -27,12 +28,30 @@ public class FullExample
            ;
     }
 
-    private static ILogger serilogBuilder(BotBuilder builder)
+    //private static Serilog.ILogger serilogBuilder(BotBuilder builder)
+    //{
+    //    ILogger log = new LoggerConfiguration()
+    //        .MinimumLevel.Information()
+    //        .WriteTo.Console()
+    //        .WriteTo.File(((MyConfig)builder.Config).FilePath, rollingInterval: RollingInterval.Month)
+    //        .CreateLogger();
+    //
+    //    builder.BotEngineLogErrorEvents += (sender, errorArgs) =>
+    //    {
+    //        log.Error(errorArgs.Exception, errorArgs.MessageTemplate, errorArgs.Data);
+    //    };
+    //    builder.BotStartupLogEvents += (sender, args) =>
+    //    {
+    //        log.Information(args.MessageTemplate, args.Data);
+    //    };
+    //    return log;
+    //}
+    private static Simple.BotUtils.Logging.ILogger SimpleLogBuilder(BotBuilder builder)
     {
-        ILogger log = new LoggerConfiguration()
-            .MinimumLevel.Information()
-            .WriteTo.Console()
-            .WriteTo.File(((MyConfig)builder.Config).FilePath, rollingInterval: RollingInterval.Month)
+        Simple.BotUtils.Logging.ILogger log = new LoggerBuilder()
+            .SetMinimumLevel(LogEventLevel.Information)
+            .LogToConsole()
+            .LogToFile((builder.Config as MyConfig).LogPath)
             .CreateLogger();
 
         builder.BotEngineLogErrorEvents += (sender, errorArgs) =>
@@ -43,7 +62,6 @@ public class FullExample
         {
             log.Information(args.MessageTemplate, args.Data);
         };
-
         return log;
     }
     private static IDB[] databaseBuilder(BotBuilder builder)
