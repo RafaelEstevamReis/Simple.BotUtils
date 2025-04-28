@@ -129,12 +129,12 @@ public class BotBuilder : IDisposable
     {
         startupLog("[SETUP] INIT complete");
 
-        while (!cancelationToken.IsCancellationRequested)
+        while (!CancelationToken.IsCancellationRequested)
         {
             startupLog("[Scheduler] Startup");
             try
             {
-                tasker.RunJobsSynchronously(cancelationToken);
+                tasker.RunJobsSynchronously(CancelationToken);
             }
             catch (Exception ex)
             {
