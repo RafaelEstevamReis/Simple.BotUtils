@@ -10,13 +10,13 @@ namespace Simple.BotUtils.Jobs
     public class Scheduler
     {
         private const int timeDelaySeconds = 10; // 10s
-        readonly Dictionary<Type, JobInfo> jobs;
+        readonly Dictionary<string, JobInfo> jobs;
 
         public event EventHandler<TaskErrorEventArgs> Error;
 
         public Scheduler()
         {
-            jobs = new Dictionary<Type, JobInfo>();
+            jobs = new Dictionary<string, JobInfo>();
         }
 
         public Scheduler Add<T>(T job) where T : IJob
@@ -25,7 +25,7 @@ namespace Simple.BotUtils.Jobs
         }
         public Scheduler Add(Type t, IJob task)
         {
-            jobs[t] = new JobInfo()
+            jobs[t.FullName] = new JobInfo()
             {
                 SchedulerJob = task,
                 SystemTask = null
@@ -38,7 +38,7 @@ namespace Simple.BotUtils.Jobs
         public IEnumerable<string> GetRegisteredTypes()
         {
             // Ensures the enumeration completition before return
-            return jobs.Keys.Select(o => o.FullName).ToArray();
+            return jobs.Keys.ToArray();
         }
         public IEnumerable<JobInfo> GetRegisteredJobs()
         {
@@ -82,13 +82,12 @@ namespace Simple.BotUtils.Jobs
             if (lstex.Count > 0) throw new AggregateException(lstex.ToArray());
         }
 
-
         public bool RunJob<T>(object parameter)
             => RunJob<T>(parameter, out string _);
         public bool RunJob<T>(object parameter, out string failedReason)
         {
             var t = typeof(T);
-            if (!jobs.TryGetValue(t, out JobInfo info))
+            if (!jobs.TryGetValue(t.FullName, out JobInfo info))
             {
                 failedReason = "Type not present";
                 return false;
@@ -181,7 +180,7 @@ namespace Simple.BotUtils.Jobs
         public JobInfo GetJobInfo<T>()
         {
             var t = typeof(T);
-            if (!jobs.TryGetValue(t, out JobInfo info)) return null;
+            if (!jobs.TryGetValue(t.FullName, out JobInfo info)) return null;
             // Make a copy
             return new JobInfo()
             {
