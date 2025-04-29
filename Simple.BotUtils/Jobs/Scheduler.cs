@@ -84,19 +84,43 @@ namespace Simple.BotUtils.Jobs
 
 
         public bool RunJob<T>(object parameter)
+            => RunJob<T>(parameter, out string _);
+        public bool RunJob<T>(object parameter, out string failedReason)
         {
             var t = typeof(T);
-            if (!jobs.TryGetValue(t, out JobInfo info)) return false;
+            if (!jobs.TryGetValue(t, out JobInfo info))
+            {
+                failedReason = "Type not present";
+                return false;
+            }
 
-            return RunJob(info, parameter);
+            return RunJob(info, parameter, out failedReason);
         }
         public bool RunJob(JobInfo info, object parameter)
+            => RunJob(info, parameter, out string _);
+        public bool RunJob(JobInfo info, object parameter, out string failedReason)
         {
-            if (!info.CanRun) return false;
-            if (!info.SchedulerJob.CanBeInvoked) return false;
+            if (!info.CanRun)
+            {
+                string taskStatus = "";
+                if (info.SystemTask != null)
+                {
+                    taskStatus = " Task: " + info.SystemTask.Status;
+                    if (!info.SystemTask.IsCompleted) taskStatus += " [NotCompleted]";
+                }
+
+                failedReason = "Job can not Run" + taskStatus;
+                return false;
+            }
+            if (!info.SchedulerJob.CanBeInvoked)
+            {
+                failedReason = "Job can not be invoked";
+                return false;
+            }
 
             runJob(info, ExecutionTrigger.Invoked, parameter);
 
+            failedReason = null;
             return true;
         }
 
@@ -106,9 +130,9 @@ namespace Simple.BotUtils.Jobs
             info.LastExecution = DateTime.Now;
             info.SystemTask = task;
 
-            collectTaskErrors(info, task);
+            waitAndCollectTaskErrors(info, task);
         }
-        private void collectTaskErrors(JobInfo info, Task task)
+        private void waitAndCollectTaskErrors(JobInfo info, Task task)
         {
             try
             {
