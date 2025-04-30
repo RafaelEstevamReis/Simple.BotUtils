@@ -21,7 +21,7 @@ namespace Simple.BotUtils.Jobs
 
         public Scheduler Add<T>(T job) where T : IJob
         {
-            return Add(typeof(T), job);
+            return Add(job.GetType(), job);
         }
         public Scheduler Add(Type t, IJob task)
         {
