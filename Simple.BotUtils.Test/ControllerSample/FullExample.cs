@@ -1,4 +1,5 @@
 ﻿using Simple.BotUtils.Controllers;
+using Simple.BotUtils.Test;
 using Simple.BotUtils.Test.ControllerSample;
 using System;
 
@@ -33,6 +34,9 @@ namespace ControllerSample
             // splitting a received text, passing a context argument
             string message = "ShowCallerInfo \"Bla bla bla bla\"";
             ctrl.ExecuteFromText(context: 42, text: message);
+            ctrl.ExecuteFromText(context: new Message { Content = message }, "ShowInfoObject \"Bla bla bla bla\"");
+
+
             // Support for `params`
             ctrl.ExecuteFromText("echo a b c d e");
 

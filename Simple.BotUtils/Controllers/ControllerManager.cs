@@ -77,7 +77,7 @@ namespace Simple.BotUtils.Controllers
                 if (method.GetCustomAttributes(false).OfType<IgnoreAttribute>().Any()) continue;
                 // do not bind Special
                 if (method.IsSpecialName) continue;
-                
+
                 // ignore Job's override methods
                 if (isIJOB)
                 {
@@ -176,6 +176,14 @@ namespace Simple.BotUtils.Controllers
             var matchedMethods = info.Methods.Where(m => countParameters(m) == parameters.Length
                                                          || hasParamsArray(m))
                                              .ToArray();
+            if (matchedMethods.Length == 0)
+            {
+                // Procura com menos?
+                matchedMethods = info.Methods.Where(m => countParameters(m) < parameters.Length
+                                                        || hasParamsArray(m))
+                                            .ToArray();
+            }
+
             if (matchedMethods.Length == 0)
             {
                 throw new NoSuitableMethodFound(method);
@@ -365,6 +373,11 @@ namespace Simple.BotUtils.Controllers
                         catch { p = parameters[pCount]; }
                     }
 
+                    pCount++;
+                }
+                else if (paramInfo[i].ParameterType == typeof(object))
+                {
+                    p = parameters[pCount];
                     pCount++;
                 }
                 else

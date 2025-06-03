@@ -20,4 +20,9 @@ namespace Simple.BotUtils.Test
             return $"{MyName} | {MyInfo} | {MyNumber}: {MyLongNumber}";
         }
     }
+    public class Message
+    {
+        public int Id { get; set; }
+        public string Content { get; set; }
+    }
 }

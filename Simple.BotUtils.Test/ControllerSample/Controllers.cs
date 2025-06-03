@@ -20,6 +20,8 @@ namespace Simple.BotUtils.Test.ControllerSample
         {
             Console.WriteLine(string.Join(' ', contents));
         }
+
+        public void ShowInfoObject(Message context) => Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(context));
     }
     public class AdvancedControllers : IController
     {
