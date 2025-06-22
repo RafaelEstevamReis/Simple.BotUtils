@@ -12,5 +12,7 @@ namespace Simple.BotUtils.Jobs
             Info = info;
             Exception = ex;
         }
+
+        public override string ToString() => $"[{Info.SchedulerJob.GetType().Name}] ERR {Exception}";
     }
 }
