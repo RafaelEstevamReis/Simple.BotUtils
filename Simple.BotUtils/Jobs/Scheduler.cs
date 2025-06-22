@@ -141,15 +141,15 @@ namespace Simple.BotUtils.Jobs
             {
                 foreach (var e in ex.InnerExceptions)
                 {
-                    raiseErrorEvent(new TaskErrorEventArgs(info, e));
+                    invokeErrorEvent(new TaskErrorEventArgs(info, e));
                 }
             }
             catch (Exception ex)
             {
-                raiseErrorEvent(new TaskErrorEventArgs(info, ex));
+                invokeErrorEvent(new TaskErrorEventArgs(info, ex));
             }
         }
-        private void raiseErrorEvent(TaskErrorEventArgs taskErrorEventArgs)
+        private void invokeErrorEvent(TaskErrorEventArgs taskErrorEventArgs)
         {
             Error?.Invoke(this, taskErrorEventArgs);
         }
