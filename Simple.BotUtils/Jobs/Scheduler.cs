@@ -163,6 +163,8 @@ namespace Simple.BotUtils.Jobs
 
             while (true)
             {
+                try
+                {
 #if NET40
                 for (int i = 0; i < timeDelaySeconds * 10; i++)
                 {
@@ -170,8 +172,20 @@ namespace Simple.BotUtils.Jobs
                     if (token.IsCancellationRequested) break;
                 }
 #else
-                Task.Delay(timeDelaySeconds * 10, token).Wait(); // Do not throw exception
+                    Task.Delay(timeDelaySeconds * 10, token).Wait(CancellationToken.None);
 #endif
+                }
+                catch (AggregateException aex)
+                {
+                    if (aex.InnerExceptions.All(i => i is TaskCanceledException)) return;
+                    throw;
+                }
+                catch (TaskCanceledException)
+                {
+                    if (token.IsCancellationRequested) return;
+                    throw;
+                }
+
                 if (token.IsCancellationRequested) break;
                 RunTimedJobs();
             }

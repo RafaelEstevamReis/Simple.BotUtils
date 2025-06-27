@@ -136,6 +136,11 @@ public class BotBuilder : IDisposable
             {
                 tasker.RunJobsSynchronously(CancelationToken);
             }
+            catch (TaskCanceledException)
+            {
+                if (CancelationToken.IsCancellationRequested) return;
+                throw;
+            }
             catch (Exception ex)
             {
                 errorLog(ex, "[Scheduler] Error", []);
@@ -143,7 +148,7 @@ public class BotBuilder : IDisposable
                 if (!restartOnError) break;
             }
         }
-        startupLog("[BOT] Cancell");
+        startupLog("[BOT] Cancel");
 
         Dispose();
     }
@@ -155,7 +160,7 @@ public class BotBuilder : IDisposable
 
     public void Dispose()
     {
-        startupLog("[BOT] Dispse()");
+        startupLog("[BOT] Dispose()");
         if (!cancelationSource.IsCancellationRequested) cancelationSource.Cancel();
 
         foreach (var db in DBs) db.Dispose();
