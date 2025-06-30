@@ -9,6 +9,7 @@ using Simple.BotUtils.Test.ControllerSample;
 using Simple.BotUtils.Test.ScheduleSample;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class FullExample
 {
@@ -24,6 +25,7 @@ public class FullExample
            .Setup5Controllers(controllerBuilder)
            .Setup6Services(serviceBuilder)
            .SetupMisc(captureControlC)
+           .SetupMiscAsync(runTask)
            .Run(restartOnError: false)
            ;
     }
@@ -98,4 +100,9 @@ public class FullExample
             builder.Stop();
         };
     }
+    private static async Task runTask(BotBuilder builder)
+    {
+        await Task.CompletedTask;
+    }
+
 }
