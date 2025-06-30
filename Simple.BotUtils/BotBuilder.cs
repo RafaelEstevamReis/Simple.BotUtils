@@ -131,7 +131,7 @@ public class BotBuilder : IDisposable
         return this;
     }
 
-    public void Run(bool restartOnError = false)
+    public BotBuilder Run(bool restartOnError = false)
     {
         startupLog("[SETUP] INIT complete");
 
@@ -144,7 +144,7 @@ public class BotBuilder : IDisposable
             }
             catch (TaskCanceledException)
             {
-                if (CancelationToken.IsCancellationRequested) return;
+                if (CancelationToken.IsCancellationRequested) return this;
                 throw;
             }
             catch (Exception ex)
@@ -156,8 +156,14 @@ public class BotBuilder : IDisposable
         }
         startupLog("[BOT] Cancel");
 
+        return this;
+    }
+    public void CleanUp(Action action = null)
+    {
+        action?.Invoke();
         Dispose();
     }
+
     public void Stop()
     {
         startupLog("[BOT] Stop()");
