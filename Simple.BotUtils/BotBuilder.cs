@@ -124,6 +124,12 @@ public class BotBuilder : IDisposable
         action(this);
         return this;
     }
+    public BotBuilder SetupMiscAsync(Func<BotBuilder, Task> action)
+    {
+        var task = action(this);
+        task.Wait();
+        return this;
+    }
 
     public void Run(bool restartOnError = false)
     {
