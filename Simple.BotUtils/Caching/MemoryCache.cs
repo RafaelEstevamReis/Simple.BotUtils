@@ -25,6 +25,11 @@ namespace Simple.BotUtils.Caching
         {
             doMaintenance();
 
+            if (!items.ContainsKey(key))
+            {
+                value = null;
+                return false;
+            }
             CacheItem item = GetItemInfo(key);
 
             item.TryRenew();
