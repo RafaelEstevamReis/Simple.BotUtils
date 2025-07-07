@@ -5,12 +5,22 @@ namespace Simple.BotUtils.Caching
 {
     public class MemoryCache
     {
+#if NETSTANDARD1_0
         Dictionary<string, CacheItem> items;
+#else
+        System.Collections.Concurrent.ConcurrentDictionary<string, CacheItem> items;
+#endif
+
         DateTime lastMaintenance;
 
         public MemoryCache()
         {
-            items = new Dictionary<string, CacheItem>();
+#if NETSTANDARD1_0
+            Dictionary<string, CacheItem> items;
+#else
+            items = new System.Collections.Concurrent.ConcurrentDictionary<string, CacheItem>();
+#endif
+
             lastMaintenance = DateTime.Now;
         }
 
