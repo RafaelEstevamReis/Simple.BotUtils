@@ -72,6 +72,16 @@ namespace Simple.BotUtils.Caching
 
             return Get<T>(key);
         }
+        public T GetOrAdd<T>(string key, CacheOptions options, T value)
+        {
+            if (!items.ContainsKey(key))
+            {
+                Add(key, options);
+                UpdateValue(key, value);
+            }
+
+            return Get<T>(key);
+        }
         /// <summary>
         /// Invalidates an entry
         /// </summary>
