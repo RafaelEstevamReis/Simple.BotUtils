@@ -1,6 +1,4 @@
-﻿using Simple.BotUtils.Data;
-using Simple.BotUtils.DI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -10,6 +8,7 @@ namespace Simple.BotUtils.Jobs
 {
     public class Scheduler
     {
+        private static readonly Type iJobType = typeof(IJob);
         private const int timeDelaySeconds = 10; // 10s
         readonly Dictionary<string, JobInfo> jobs;
 
@@ -21,24 +20,40 @@ namespace Simple.BotUtils.Jobs
         }
 
 #if !NETSTANDARD1_0
-        public Scheduler Add<T>() where T : IJob
+        /// <summary>
+        /// Assembly to enumerate Jobs from, usually `Assembly.GetExecutingAssembly()`
+        /// </summary>
+        public Scheduler AddAssemblyJobs(System.Reflection.Assembly asm)
         {
-            var type = typeof(T);
+            var allTypes = asm.GetTypes().ToArray();
+            var jobs = allTypes
+                        .Where(t => !t.IsInterface)
+                        .Where(t => !t.IsAbstract)
+                        .Where(iJobType.IsAssignableFrom);
+
+            foreach (var jobType in jobs) Add(jobType);
+            return this;
+        }
+        public Scheduler Add<T>() where T : IJob => Add(typeof(T));
+        internal Scheduler Add(Type type)
+        {
+            if (!iJobType.IsAssignableFrom(type)) throw new ArgumentException("Type must be an IJob");
+
             // Instantiate
             var ctors = type.GetConstructors();
             var ctor = ctors.First();
-            
+
             var args = ctor.GetParameters();
             var values = new object[args.Length];
 
             for (int i = 0; i < args.Length; i++)
             {
-                var tInstance = Injector.Get(args[i].ParameterType);
+                var tInstance = DI.Injector.Get(args[i].ParameterType);
                 values[i] = tInstance;
             }
 
-            var job = (T)ctor.Invoke(values);
-            return Add<T>(job);
+            var job = (IJob)ctor.Invoke(values);
+            return Add(type, job);
         }
 #endif
         public Scheduler Add<T>(T job) where T : IJob
