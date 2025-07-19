@@ -70,9 +70,9 @@ public class FullExample
     {
         return [];
     }
-    private static IEnumerable<IJob> schedulerBuilder(BotBuilder builder, Scheduler scheduler)
+    private static void schedulerBuilder(BotBuilder builder, Scheduler scheduler)
     {
-        yield return new PingJob();
+        scheduler.Add<PingJob>();
     }
     private static void controllerBuilder(BotBuilder builder, ControllerManager manager)
     {

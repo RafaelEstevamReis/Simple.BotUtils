@@ -13,7 +13,7 @@ namespace ScheduleSample
             var cancellationSource = new CancellationTokenSource();
             var scheduler = new Scheduler();
             scheduler.Error += (s, err) => Console.WriteLine($"Error on [{err.Info}]: {err.Exception.Message}");
-            scheduler.Add(new PingJob());
+            scheduler.Add<PingJob>();
 
             scheduler.RunJobsSynchronously(cancellationSource.Token);
         }
