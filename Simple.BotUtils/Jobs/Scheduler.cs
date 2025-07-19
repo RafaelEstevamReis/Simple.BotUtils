@@ -1,4 +1,5 @@
 ﻿using Simple.BotUtils.Data;
+using Simple.BotUtils.DI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,27 @@ namespace Simple.BotUtils.Jobs
             jobs = new Dictionary<string, JobInfo>();
         }
 
+#if !NETSTANDARD1_0
+        public Scheduler Add<T>() where T : IJob
+        {
+            var type = typeof(T);
+            // Instantiate
+            var ctors = type.GetConstructors();
+            var ctor = ctors.First();
+            
+            var args = ctor.GetParameters();
+            var values = new object[args.Length];
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                var tInstance = Injector.Get(args[i].ParameterType);
+                values[i] = tInstance;
+            }
+
+            var job = (T)ctor.Invoke(values);
+            return Add<T>(job);
+        }
+#endif
         public Scheduler Add<T>(T job) where T : IJob
         {
             return Add(job.GetType(), job);
