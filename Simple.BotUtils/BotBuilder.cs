@@ -86,17 +86,34 @@ public class BotBuilder : IDisposable
     }
     public BotBuilder Setup4Scheduler(Func<BotBuilder, Scheduler, IEnumerable<IJob>> jobsSource)
     {
+        return _setup4Scheduler(() =>
+        {
+            foreach (var j in jobsSource(this, tasker)) tasker.Add(j);
+        });
+    }
+    public BotBuilder Setup4Scheduler(Action<BotBuilder, Scheduler> jobsSource)
+    {
+        return _setup4Scheduler(() => jobsSource(this, tasker));
+    }
+    public BotBuilder Setup4SchedulerWithEntryAssemblyJobs()
+    {
+        return _setup4Scheduler(() => tasker.AddAssemblyJobs(Assembly.GetEntryAssembly()));
+    }
+    private BotBuilder _setup4Scheduler(Action addJobs)
+    {
         tasker.Error += (s, e) =>
         {
             errorLog(e.Exception, "[SCHEDULER] Error {@job}", [e.Info]);
         };
-        foreach (var j in jobsSource(this, tasker)) tasker.Add(j);
+
+        addJobs();
 
         startupLog("[SETUP] Scheduler init {TaskCount} tasks", tasker.JobCount);
         DI.Injector.AddSingleton(tasker);
 
         return this;
     }
+
     public BotBuilder Setup5Controllers(Action<BotBuilder, ControllerManager> ctrlSource)
     {
         ctrlSource(this, ctrl);
