@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 public static class Randomizer
@@ -17,6 +18,23 @@ public static class Randomizer
     {
         var idx = Instance.Next(options.Count);
         return options[idx];
+    }
+
+    public static IEnumerable<T> ChooseMany<T>(this IEnumerable<T> options, int count)
+    {
+        if (options == null || count <= 0) yield break;
+
+        var list = new List<T>(options);
+        if (list.Count == 0) yield break;
+
+        if (count > list.Count) count = list.Count;
+
+        for (int i = 0; i < count; i++)
+        {
+            int idx = Instance.Next(list.Count); // Sorteia um índice da lista
+            yield return list[idx]; // Retorna o item sorteado
+            list.RemoveAt(idx); // Remove o item para evitar repetição
+        }
     }
 
     public static int GetRandomInt(int max)
