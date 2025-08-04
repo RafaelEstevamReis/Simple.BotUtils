@@ -124,6 +124,11 @@ public class LoggerBuilder
         loggers.Add(new LogToFile(filePath));
         return this;
     }
+    public LoggerBuilder LogToJsonLinesFile(string filePath)
+    {
+        loggers.Add(new LogToJsonLines(filePath));
+        return this;
+    }
     public LoggerBuilder LogToConsole()
     {
         loggers.Add(new LogToConsole());

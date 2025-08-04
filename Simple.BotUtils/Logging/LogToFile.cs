@@ -69,7 +69,7 @@ public class LogToFile : ILogger
             }
             catch (IOException ex)
             {
-                Console.WriteLine($"[ERROR] Falha ao escrever no arquivo de log: {ex.Message}");
+                Console.WriteLine($"[ERROR] Failed to write log file: {ex}");
             }
         }
     }
