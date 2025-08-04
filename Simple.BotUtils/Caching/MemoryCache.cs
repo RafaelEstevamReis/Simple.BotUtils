@@ -15,12 +15,7 @@ namespace Simple.BotUtils.Caching
 
         public MemoryCache()
         {
-#if NETSTANDARD1_0
-            items = new Dictionary<string, CacheItem>();
-#else
-            items = new System.Collections.Concurrent.ConcurrentDictionary<string, CacheItem>();
-#endif
-
+            items = [];
             lastMaintenance = DateTime.Now;
         }
 
@@ -92,6 +87,7 @@ namespace Simple.BotUtils.Caching
 
             return Get<T>(key);
         }
+
         /// <summary>
         /// Invalidates an entry
         /// </summary>
