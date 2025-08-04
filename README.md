@@ -4,11 +4,17 @@
 
 - [Simple.BotUtils](#simplebotutils)
   - [Compatibility List:](#compatibility-list)
+  - [BotBuilder class](#botbuilder-class)
+- [Main Features](#main-features)
   - [Dependency Injection](#dependency-injection)
   - [Endpoint-like controllers](#endpoint-like-controllers)
   - [Command-Line parser](#command-line-parser)
   - [Job/Task Scheduler](#jobtask-scheduler)
   - [Memory Caching](#memory-caching)
+  - [Simplified logging engine](#simplified-logging-engine)
+  - [Other Tools](#other-tools)
+    - [Randomizer](#randomizer)
+    - [NotificationDebouncer](#notificationdebouncer)
   - [Xml and Json Serialization](#xml-and-json-serialization)
     - [XmlSerializer](#xmlserializer)
     - [JsonSerializer](#jsonserializer)
@@ -27,7 +33,7 @@ Works for small projects in any platform (see compatibility list)
 Direct targets:
 * Net Core 3.1, and 2.1
 * Net Standard 1.0*, and 2.0
-* Net 6.0, and 7.0
+* Net 8.0, and 9.0
 * Net Framework 4.6.1, 4.7.2, and 4.8
   
 Indirect Support from Net Standard 2.0:
@@ -38,6 +44,31 @@ Indirect Support from Net Standard 2.0:
 * Xamarin.Android 8.0+
 * UWP 10.0.16299+
 * Unity 2018.1
+
+## BotBuilder class
+
+A beginner-friendly bot builder to help with boilerplate code integrating all tools and features
+
+Instead of mannualy remembering what to add to a new project, the BotBuilder class help you with the list of options and in the order:
+~~~C#
+public static void ProgramMain(string[] args)
+{
+    using var bot = new BotBuilder();
+
+    bot.Setup1Config<MyConfig>("cfg.json", args) // Load my cofig first
+       .Setup2Logs(SimpleLogBuilder) // Setup logs
+       .Setup3DB(databaseBuilder)    // Setup dabases
+       .SetupMisc(captureControlC)   // Add misc functions
+       .Setup4Scheduler(schedulerBuilder)   // Add jobs
+       .Setup5Controllers(controllerBuilder)// Add controllers
+       .Setup6Services(serviceBuilder) // Add services
+       .SetupMiscAsync(runTask)      // Add Async functions like APIs or Telegram/WhatsApp client
+       .Run(restartOnError: false)   // Run the bot with optional restart-on-errors
+       ;
+}
+~~~
+
+# Main Features
 
 ## Dependency Injection
 
@@ -226,6 +257,51 @@ A simple and versatile Memory Caching class, supports renew based on LastAccess 
   ...
   // For use, simply calls Get<T>("key")
   var data = cache.Get<Data[]>("cache-key");
+~~~
+
+## Simplified logging engine
+
+A simplified logging engine that behaves like Serilog for small applications and proof-of-concepts and is easy to switch to a production logging solution
+
+~~~C#
+ILogger log = new LoggerBuilder()
+    .SetMinimumLevel(LogEventLevel.Information)
+    .LogToConsole()
+    .LogToFile(logPath)
+    .CreateLogger();
+...
+try
+{
+    log.Information("Doing my stuff with {p}", p);
+}
+catch (Exception ex)
+{
+    log.Error(ex, "Stuff {s} went wrong", suff);
+}
+~~~
+
+## Other Tools
+
+### Randomizer
+
+Offers a static Random instance and this set of tools:
+
+* Choose One
+* ChoseMany
+* Shuffle
+
+### NotificationDebouncer
+
+A simple way to feed events and only notify when something changes
+
+~~~C#
+var notification = new NotificationDebouncer<bool>();
+notification.NewValue += (sender, args) => Console.WriteLine($"Old: {args.OldValue} New: {args.NewValue}");
+notification.SetValue(false); // Do not notify
+notification.SetValue(false); // Do not notify
+notification.SetValue(true); //  Do notify!
+//Console: Old: false New: true
+notification.SetValue(true); //  Do not notify
 ~~~
 
 ## Xml and Json Serialization
