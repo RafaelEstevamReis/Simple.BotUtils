@@ -22,11 +22,7 @@
 
 # Simple.BotUtils
 
-Some Bots Utilities containing common features such as Dependency Injection, Job Scheduler, MemoryCache and Argument Parser
-
-Lightweight, simple, compatible, and depends only Newtonsoft.Json.
-
-Works for small projects in any platform (see compatibility list)
+A lightweight, user-friendly toolkit designed for building bots with essential features like Dependency Injection, Job Scheduler, Memory Cache, and Command-Line Parsing.Clear, highly compatible, and relies only on Newtonsoft.Json.Perfect for small-scale projects on any platform, from modern x64 systems to older hardware like Raspberry 3 (see compatibility list).
 
 ## Compatibility List:
 
@@ -49,7 +45,7 @@ Indirect Support from Net Standard 2.0:
 
 A beginner-friendly bot builder to help with boilerplate code integrating all tools and features
 
-Instead of mannualy remembering what to add to a new project, the BotBuilder class help you with the list of options and in the order:
+Instead of mannualy remembering what to add to a new project, the BotBuilder class helps you with the list of options and in the order:
 ~~~C#
 public static void ProgramMain(string[] args)
 {
