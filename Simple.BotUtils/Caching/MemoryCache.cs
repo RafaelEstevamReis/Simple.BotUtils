@@ -6,9 +6,9 @@ namespace Simple.BotUtils.Caching
     public class MemoryCache
     {
 #if NETSTANDARD1_0
-        Dictionary<string, CacheItem> items;
+        private readonly Dictionary<string, CacheItem> items;
 #else
-        System.Collections.Concurrent.ConcurrentDictionary<string, CacheItem> items;
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<string, CacheItem> items;
 #endif
 
         DateTime lastMaintenance;
@@ -16,7 +16,7 @@ namespace Simple.BotUtils.Caching
         public MemoryCache()
         {
 #if NETSTANDARD1_0
-            Dictionary<string, CacheItem> items;
+            items = new Dictionary<string, CacheItem>();
 #else
             items = new System.Collections.Concurrent.ConcurrentDictionary<string, CacheItem>();
 #endif
