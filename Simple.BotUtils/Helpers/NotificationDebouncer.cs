@@ -13,7 +13,7 @@ public class NotificationDebouncer<T>
     private int hitCount = 0;
 
     public int MinBounces { get; set; } = 0;
-    public event EventHandler<NewValueEventArgs> NewValue;
+    public event EventHandler<NewValueEventArgs<T>> NewValue;
 
     public NotificationDebouncer(IEqualityComparer<T> comparer = null)
     {
@@ -52,26 +52,25 @@ public class NotificationDebouncer<T>
         hasCandidate = false;
         hitCount = 0;
         // Invoke
-        NewValue?.Invoke(this, NewValueEventArgs.Create(currentValue, oldValue, MinBounces));
+        NewValue?.Invoke(this, NewValueEventArgs<T>.Create(currentValue, oldValue, MinBounces));
         return true;
     }
-
-    public class NewValueEventArgs : EventArgs
+}
+public class NewValueEventArgs<T> : EventArgs
+{
+    private NewValueEventArgs(T newValue, T oldValue, int bounces)
     {
-        private NewValueEventArgs(T newValue, T oldValue, int bounces)
-        {
-            NewValue = newValue;
-            OldValue = oldValue;
-            Bounces = bounces;
-        }
+        NewValue = newValue;
+        OldValue = oldValue;
+        Bounces = bounces;
+    }
 
-        public T NewValue { get; }
-        public T OldValue { get; }
-        public int Bounces { get; }
+    public T NewValue { get; }
+    public T OldValue { get; }
+    public int Bounces { get; }
 
-        public static NewValueEventArgs Create(T newValue, T oldValue, int bounces)
-        {
-            return new NewValueEventArgs(newValue, oldValue, bounces);
-        }
+    public static NewValueEventArgs<T> Create(T newValue, T oldValue, int bounces)
+    {
+        return new NewValueEventArgs<T>(newValue, oldValue, bounces);
     }
 }
