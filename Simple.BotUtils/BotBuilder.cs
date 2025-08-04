@@ -84,6 +84,21 @@ public class BotBuilder : IDisposable
 
         return this;
     }
+    public BotBuilder Setup3DB(params IDB[] DBs)
+    {
+        // Startup all in parallel
+        var allTasks = DBs.Select(o => Task.Run(() =>
+        {
+            o.Startup();
+            DI.Injector.AddSingleton(o.GetType(), o); // Add instance type, not interface
+        })).ToArray();
+        Task.WaitAll(allTasks);
+
+        startupLog("[SETUP] Database init {dbCount} DBs", allTasks.Length);
+
+        return this;
+    }
+
     public BotBuilder Setup4Scheduler(Func<BotBuilder, Scheduler, IEnumerable<IJob>> jobsSource)
     {
         return _setup4Scheduler(() =>
