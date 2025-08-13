@@ -36,6 +36,24 @@ public static class Randomizer
             list.RemoveAt(idx); // Remove o item para evitar repetição
         }
     }
+    public static IEnumerable<T> OrderByRandom<T>(this IEnumerable<T> source)
+    {
+        if (source == null) throw new ArgumentNullException(nameof(source));
+
+        if (source is IList<T> list)
+        {
+            var copy = new List<T>(list);
+            copy.Shuffle();
+            return copy;
+        }
+        else
+        {
+            // Fallback: convert to List
+            list = source.ToList();
+            list.Shuffle();
+            return list;
+        }
+    }
 
     public static int GetRandomInt(int max)
         => Instance.Next(max);
