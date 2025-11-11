@@ -16,6 +16,7 @@ namespace Simple.BotUtils.Data
             where T : IConfigBase
         {
             var fi = new FileInfo(filePath);
+            if (!fi.Directory.Exists) fi.Directory.Create();
 
             if (fi.Extension.Equals(".xml", StringComparison.InvariantCultureIgnoreCase))
             {
