@@ -1,6 +1,6 @@
 [![.NET](https://github.com/RafaelEstevamReis/Simple.BotUtils/actions/workflows/dotnet.yml/badge.svg)](https://github.com/RafaelEstevamReis/Simple.BotUtils/actions/workflows/dotnet.yml)
 
-[![NuGet](https://buildstats.info/nuget/Simple.BotUtils)](https://www.nuget.org/packages/Simple.BotUtils)
+[![NuGet](https://img.shields.io/nuget/v/Simple.BotUtils)](https://www.nuget.org/packages/Simple.BotUtils)
 
 - [Simple.BotUtils](#simplebotutils)
   - [Compatibility List:](#compatibility-list)
