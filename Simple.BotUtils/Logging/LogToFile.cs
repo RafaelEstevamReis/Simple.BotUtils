@@ -7,10 +7,19 @@ using System.Text;
 
 public class LogToFile : ILogger
 {
+    public enum RotateOptions
+    {
+        NoRotation = 0,
+        Daily = 1,
+        Monthly = 2,
+        Yearly = 3,
+    }
+
     private readonly string _filePath;
     private readonly object _lock = new();
+    private readonly RotateOptions logRotate;
 
-    public LogToFile(string filePath)
+    public LogToFile(string filePath, RotateOptions logRotation = RotateOptions.NoRotation)
     {
         _filePath = string.IsNullOrWhiteSpace(filePath)
             ? throw new ArgumentException("File path cannot be null or empty.", nameof(filePath))
@@ -22,6 +31,8 @@ public class LogToFile : ILogger
         {
             Directory.CreateDirectory(directory);
         }
+
+        this.logRotate = logRotation;
     }
 
     public void Information(string messageTemplate, params object[] propertyValues)
@@ -58,11 +69,26 @@ public class LogToFile : ILogger
 
     private void WriteToFile(string message)
     {
+        string fName = _filePath;
+        if (logRotate != RotateOptions.NoRotation)
+        {
+            var utcNow = DateTime.UtcNow;
+            string append = logRotate switch
+            {
+                RotateOptions.Daily => $"_{utcNow:yyyyMMdd}",
+                RotateOptions.Monthly => $"_{utcNow:yyyyMM}",
+                RotateOptions.Yearly => $"_{utcNow:yyyy}",
+                //RotateOptions.NoRotation => "",
+                _ => "",
+            };
+            fName = Path.GetFileNameWithoutExtension(fName) + append + Path.GetExtension(fName);
+        }
+
         lock (_lock)
         {
             try
             {
-                using var stream = new FileStream(_filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+                using var stream = new FileStream(fName, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
                 using var writer = new StreamWriter(stream, Encoding.UTF8);
                 writer.WriteLine(message);
                 writer.Flush();

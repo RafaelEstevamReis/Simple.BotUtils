@@ -53,7 +53,7 @@ public class FullExample
         ILogger log = new LoggerBuilder()
             .SetMinimumLevel(LogEventLevel.Information)
             .LogToConsole()
-            .LogToFile((builder.Config as MyConfig).LogPath)
+            .LogToFile((builder.Config as MyConfig).LogPath, LogToFile.RotateOptions.Monthly)
             .CreateLogger();
 
         builder.BotEngineLogErrorEvents += (sender, errorArgs) =>

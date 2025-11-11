@@ -119,9 +119,9 @@ public class LoggerBuilder
     LogEventLevel minLevel = LogEventLevel.Information;
     List<ILogger> loggers = [];
 
-    public LoggerBuilder LogToFile(string filePath)
+    public LoggerBuilder LogToFile(string filePath, LogToFile.RotateOptions logRotation = Logging.LogToFile.RotateOptions.NoRotation)
     {
-        loggers.Add(new LogToFile(filePath));
+        loggers.Add(new LogToFile(filePath, logRotation));
         return this;
     }
     public LoggerBuilder LogToJsonLinesFile(string filePath)
