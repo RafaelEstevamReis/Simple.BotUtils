@@ -69,7 +69,7 @@ public class LogToFile : ILogger
 
     private void WriteToFile(string message)
     {
-        string fName = _filePath;
+        string filePath = _filePath;
         if (logRotate != RotateOptions.NoRotation)
         {
             var utcNow = DateTime.UtcNow;
@@ -78,17 +78,17 @@ public class LogToFile : ILogger
                 RotateOptions.Daily => $"_{utcNow:yyyyMMdd}",
                 RotateOptions.Monthly => $"_{utcNow:yyyyMM}",
                 RotateOptions.Yearly => $"_{utcNow:yyyy}",
-                //RotateOptions.NoRotation => "",
                 _ => "",
             };
-            fName = Path.GetFileNameWithoutExtension(fName) + append + Path.GetExtension(fName);
+            var fileName = Path.GetFileNameWithoutExtension(_filePath) + append + Path.GetExtension(_filePath);
+            filePath = Path.Combine(Path.GetDirectoryName(_filePath), fileName);
         }
 
         lock (_lock)
         {
             try
             {
-                using var stream = new FileStream(fName, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+                using var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
                 using var writer = new StreamWriter(stream, Encoding.UTF8);
                 writer.WriteLine(message);
                 writer.Flush();
