@@ -68,6 +68,31 @@ public class BotBuilder : IDisposable
 
         return this;
     }
+    public BotBuilder Setup2SimpleLog(Action<BotBuilder, Logging.LoggerBuilder> logBuilder) => Setup2Logs<Logging.ILogger>(botBuilder =>
+        {
+            var lb = new Logging.LoggerBuilder();
+            logBuilder(this, lb);
+            var log = lb.CreateLogger();
+
+            botBuilder.BotEngineLogErrorEvents += (sender, errorArgs) =>
+            {
+                log.Error(errorArgs.Exception, errorArgs.MessageTemplate, errorArgs.Data);
+            };
+            botBuilder.BotStartupLogEvents += (sender, args) =>
+            {
+                log.Information(args.MessageTemplate, args.Data);
+            };
+
+            return log;
+        });
+    public BotBuilder Setup2SimpleLog()
+    {
+        return Setup2SimpleLog((bot, log) =>
+        {
+            log.LogToConsole(Logging.LogEventLevel.Information)
+               .LogToFile("eventLog.log", Logging.LogToFile.RotateOptions.Monthly);
+        });
+    }
 
     public BotBuilder Setup3DB(Func<BotBuilder, IEnumerable<IDB>> dbBuilders)
     {
