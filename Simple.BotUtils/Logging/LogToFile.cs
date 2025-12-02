@@ -3,6 +3,7 @@ namespace Simple.BotUtils.Logging;
 
 using System;
 using System.IO;
+using System.Reflection.Emit;
 using System.Text;
 
 public class LogToFile : ILogger
@@ -19,7 +20,9 @@ public class LogToFile : ILogger
     private readonly object _lock = new();
     private readonly RotateOptions logRotate;
 
-    public LogToFile(string filePath, RotateOptions logRotation = RotateOptions.NoRotation)
+    public LogEventLevel MinLevel { get; set; }
+
+    public LogToFile(string filePath, RotateOptions logRotation = RotateOptions.NoRotation, LogEventLevel minLevel = LogEventLevel.Information)
     {
         _filePath = string.IsNullOrWhiteSpace(filePath)
             ? throw new ArgumentException("File path cannot be null or empty.", nameof(filePath))
@@ -32,26 +35,28 @@ public class LogToFile : ILogger
             Directory.CreateDirectory(directory);
         }
 
-        this.logRotate = logRotation;
+        logRotate = logRotation;
+        MinLevel = minLevel;
     }
 
     public void Information(string messageTemplate, params object[] propertyValues)
     {
-        WriteToFile(Logger.MessageBuider(LogEventLevel.Information, false, messageTemplate, propertyValues));
+        write(LogEventLevel.Information, messageTemplate, propertyValues);
     }
 
     public void Warning(string messageTemplate, params object[] propertyValues)
     {
-        WriteToFile(Logger.MessageBuider(LogEventLevel.Warning, false, messageTemplate, propertyValues));
+        write(LogEventLevel.Warning, messageTemplate, propertyValues);
     }
 
     public void Error(string messageTemplate, params object[] propertyValues)
     {
-        WriteToFile(Logger.MessageBuider(LogEventLevel.Error, false, messageTemplate, propertyValues));
+        write(LogEventLevel.Error, messageTemplate, propertyValues);
     }
 
     public void Error(Exception exception, string messageTemplate, params object[] propertyValues)
     {
+        if (MinLevel > LogEventLevel.Error) return;
         var message = Logger.MessageBuider(LogEventLevel.Error, false, messageTemplate, propertyValues);
         var fullMessage = $"{message}\nException: {exception.Message}\nStackTrace: {exception.StackTrace}";
         WriteToFile(fullMessage);
@@ -59,14 +64,19 @@ public class LogToFile : ILogger
 
     public void Fatal(string messageTemplate, params object[] propertyValues)
     {
-        WriteToFile(Logger.MessageBuider(LogEventLevel.Fatal, false, messageTemplate, propertyValues));
+        write(LogEventLevel.Fatal, messageTemplate, propertyValues);
     }
 
     public void Debug(string messageTemplate, params object[] propertyValues)
     {
-        WriteToFile(Logger.MessageBuider(LogEventLevel.Debug, false, messageTemplate, propertyValues));
+        write(LogEventLevel.Debug, messageTemplate, propertyValues);
     }
 
+    private void write(LogEventLevel level, string messageTemplate, params object[] propertyValues)
+    {
+        if (MinLevel > level) return;
+        WriteToFile(Logger.MessageBuider(level, false, messageTemplate, propertyValues));
+    }
     private void WriteToFile(string message)
     {
         string filePath = _filePath;
