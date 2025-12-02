@@ -18,9 +18,9 @@ public class FullExample
         using var bot = new BotBuilder();
 
         bot.Setup1Config<MyConfig>("cfg.json", args)
-           //.Setup2Logs(serilogBuilder)
-           //.Setup2Logs(SimpleLogBuilder)
-           .Setup2SimpleLog(SimpleLogBuilder)
+           //.Setup2Logs(serilogBuilder) // For serilog
+           //.Setup2Logs(simpleLogBuilder) // For SimpleLog
+           .Setup2SimpleLog(simplifiedLog) // SimpleLog, Just add sinks, botbuilder handles everything else
            .Setup3DB(databaseBuilder)
            .Setup4Scheduler(schedulerBuilder)
            .Setup5Controllers(controllerBuilder)
@@ -52,14 +52,14 @@ public class FullExample
     //}
 
     /* Implementing SimpleLog logger */
-    //private static ILogger SimpleLogBuilder(BotBuilder builder)
+    //private static ILogger simpleLogBuilder(BotBuilder builder)
     //{
     //    ILogger log = new LoggerBuilder()
     //        .SetMinimumLevel(LogEventLevel.Information)
     //        .LogToConsole()
     //        .LogToFile((builder.Config as MyConfig).LogPath, LogToFile.RotateOptions.Monthly)
     //        .CreateLogger();
-
+    //
     //    builder.BotEngineLogErrorEvents += (sender, errorArgs) =>
     //    {
     //        log.Error(errorArgs.Exception, errorArgs.MessageTemplate, errorArgs.Data);
@@ -72,8 +72,9 @@ public class FullExample
     //}
 
     /* Implement simplified SimpleLog logger */
-    private static void SimpleLogBuilder(BotBuilder botBuilder, LoggerBuilder logBuilder)
+    private static void simplifiedLog(BotBuilder botBuilder, LoggerBuilder logBuilder)
     {
+        // Just add sinks
         logBuilder.LogToConsole(LogEventLevel.Information)
                   .LogToFile((botBuilder.Config as MyConfig).LogPath, LogToFile.RotateOptions.Monthly, LogEventLevel.Information)
                   ;
