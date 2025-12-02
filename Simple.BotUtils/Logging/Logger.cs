@@ -37,7 +37,7 @@ public class Logger : ILogger
             _ => "[-]",
         };
         var formattedMessage = FormatMessage(messageTemplate, propertyValues);
-        if(timeOnly) return $"[{DateTime.Now:HH:mm:ss} {strLevel}] {formattedMessage}";
+        if (timeOnly) return $"[{DateTime.Now:HH:mm:ss} {strLevel}] {formattedMessage}";
         return $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff zzz} {strLevel}] {formattedMessage}";
     }
     private static string FormatMessage(string messageTemplate, object[] propertyValues)
@@ -119,9 +119,11 @@ public class LoggerBuilder
     LogEventLevel minLevel = LogEventLevel.Information;
     List<ILogger> loggers = [];
 
-    public LoggerBuilder LogToFile(string filePath, LogToFile.RotateOptions logRotation = Logging.LogToFile.RotateOptions.NoRotation)
+    public LoggerBuilder LogToFile(string filePath, LogToFile.RotateOptions logRotation = Logging.LogToFile.RotateOptions.NoRotation, LogEventLevel minLevel = LogEventLevel.Information)
     {
-        loggers.Add(new LogToFile(filePath, logRotation));
+        if (this.minLevel > minLevel) this.minLevel = minLevel;
+
+        loggers.Add(new LogToFile(filePath, logRotation, minLevel));
         return this;
     }
     public LoggerBuilder LogToJsonLinesFile(string filePath)
@@ -129,11 +131,17 @@ public class LoggerBuilder
         loggers.Add(new LogToJsonLines(filePath));
         return this;
     }
-    public LoggerBuilder LogToConsole()
+    public LoggerBuilder LogToConsole(LogEventLevel minLevel = LogEventLevel.Information)
     {
-        loggers.Add(new LogToConsole());
+        if (this.minLevel > minLevel) this.minLevel = minLevel;
+
+        loggers.Add(new LogToConsole(minLevel));
         return this;
     }
+    /// <summary>
+    /// Sets the global minimum log level. No events below this level will be logged,
+    /// regardless of any lower level configured on individual sinks.
+    /// </summary>
     public LoggerBuilder SetMinimumLevel(LogEventLevel level)
     {
         minLevel = level;
