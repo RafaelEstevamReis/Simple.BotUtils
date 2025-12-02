@@ -138,9 +138,16 @@ public class LoggerBuilder
         loggers.Add(new LogToConsole(minLevel));
         return this;
     }
+    public LoggerBuilder LogToCustom(ILogger logger)
+    {
+        loggers.Add(logger);
+        return this;
+    }
+
     /// <summary>
     /// Sets the global minimum log level. No events below this level will be logged,
     /// regardless of any lower level configured on individual sinks.
+    /// Must be setted last
     /// </summary>
     public LoggerBuilder SetMinimumLevel(LogEventLevel level)
     {
