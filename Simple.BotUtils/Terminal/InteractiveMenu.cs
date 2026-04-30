@@ -153,6 +153,7 @@ namespace Simple.BotUtils.Terminal
         {
             public string Text { get; set; } = string.Empty;
             public ConsoleKey? HotKey { get; set; }
+            public object Tag { get; set; }
         }
 
     }
