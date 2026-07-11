@@ -7,7 +7,15 @@ using System.Reflection;
 
 public static class GrafanaExtensions
 {
-    public static LoggerConfiguration AddLoki(this LoggerConfiguration logger, Serilog.Events.LogEventLevel minimumLevel = Serilog.Events.LogEventLevel.Information)
+    /// <summary>
+    /// Builds a Grafana-Loki sink.
+    /// EnvVars: LOKI_ENDPOINT, HOST_NAME, APP_NAME, ENVIRONMENT
+    /// </summary>
+    public static LoggerConfiguration AddLoki(
+        this LoggerConfiguration logger, 
+        LokiLabel[]? lokiLabels = null,
+        LokiCredentials? credentials = null, 
+        Serilog.Events.LogEventLevel restrictedToMinimumLevel = Serilog.Events.LogEventLevel.Information)
     {
         var url = Environment.GetEnvironmentVariable("LOKI_ENDPOINT");
         if (string.IsNullOrEmpty(url))
@@ -15,15 +23,20 @@ public static class GrafanaExtensions
             return logger;
         }
 
+        LokiLabel[] labels = 
+            [
+                new LokiLabel("application", GetApplicationName()),
+                new LokiLabel("environment", GetEnviroment()),
+                new LokiLabel("host_name", GetHostName()),
+                new LokiLabel("os", Environment.GetEnvironmentVariable("OS") ?? Environment.OSVersion.ToString()),
+                .. (lokiLabels ?? [])
+            ];
+
         var loki = logger.WriteTo
             .GrafanaLoki(url,
-                [
-                    new LokiLabel("application", GetApplicationName()),
-                    new LokiLabel("environment", GetEnviroment()),
-                    new LokiLabel("host_name", GetHostName()),
-                    new LokiLabel("os", Environment.GetEnvironmentVariable("OS") ?? Environment.OSVersion.ToString()),
-                ],
-                restrictedToMinimumLevel: minimumLevel)
+                labels,
+                credentials: credentials,
+                restrictedToMinimumLevel: restrictedToMinimumLevel)
             .Enrich.FromLogContext()
             ;
 
@@ -43,8 +56,7 @@ public static class GrafanaExtensions
     {
         var entry = Assembly.GetEntryAssembly();
         var asmName = entry?.FullName ?? "UNKOWN";
-        return Environment.GetEnvironmentVariable("LOKI_APP_NAME")
-            ?? Environment.GetEnvironmentVariable("APP_NAME")
+        return Environment.GetEnvironmentVariable("APP_NAME")
             ?? Environment.GetEnvironmentVariable("APPNAME")
             ?? asmName.Split(',')[0];
     }
