@@ -7,7 +7,7 @@ using System.Reflection;
 
 public static class GrafanaExtensions
 {
-    public static LoggerConfiguration AddLoki(this LoggerConfiguration logger)
+    public static LoggerConfiguration AddLoki(this LoggerConfiguration logger, Serilog.Events.LogEventLevel minimumLevel = Serilog.Events.LogEventLevel.Information)
     {
         var url = Environment.GetEnvironmentVariable("LOKI_ENDPOINT");
         if (string.IsNullOrEmpty(url))
@@ -22,7 +22,8 @@ public static class GrafanaExtensions
                     new LokiLabel("environment", GetEnviroment()),
                     new LokiLabel("host_name", GetHostName()),
                     new LokiLabel("os", Environment.GetEnvironmentVariable("OS") ?? Environment.OSVersion.ToString()),
-                ])
+                ],
+                restrictedToMinimumLevel: minimumLevel)
             .Enrich.FromLogContext()
             ;
 
@@ -41,7 +42,7 @@ public static class GrafanaExtensions
     private static string GetApplicationName()
     {
         var entry = Assembly.GetEntryAssembly();
-        var asmName = entry.FullName ?? "UNKOWN";
+        var asmName = entry?.FullName ?? "UNKOWN";
         return Environment.GetEnvironmentVariable("LOKI_APP_NAME")
             ?? Environment.GetEnvironmentVariable("APP_NAME")
             ?? Environment.GetEnvironmentVariable("APPNAME")
