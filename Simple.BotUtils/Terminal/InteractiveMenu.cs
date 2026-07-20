@@ -139,7 +139,7 @@ namespace Simple.BotUtils.Terminal
             {
                 Console.BackgroundColor = orgBgColor;
                 Console.ForegroundColor = orgFgColor;
-                hotKeys = null;
+                hotKeys = [];
             }
         }
         /// <summary>
@@ -377,9 +377,14 @@ namespace Simple.BotUtils.Terminal
             {
                 sb.Append(highlight ? SelectionIndicator : new string(' ', SelectionIndicator.Length));
             }
-            if (ShowOptionHotKeys && hotKeys[index] != null) sb.Append('[').Append(hotKeyLabel(hotKeys[index].Value)).Append("] ");
+
+            var hotKey = hotKeys[index];
+            if (ShowOptionHotKeys && hotKey != null) sb.Append('[').Append(hotKeyLabel(hotKey.Value)).Append("] ");
+
             sb.Append(option?.Text);
-            if (!string.IsNullOrEmpty(option?.Description)) sb.Append("  - ").Append(option.Description);
+
+            var description = option?.Description;
+            if (!string.IsNullOrEmpty(description)) sb.Append("  - ").Append(description);
 
             Console.WriteLine(sb.ToString());
         }

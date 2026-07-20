@@ -17,7 +17,7 @@ namespace Simple.BotUtils.Controllers
         readonly Dictionary<string, string> aliases;
         public bool AcceptSlashInMethodName { get; set; }
 
-        public event EventHandler<FilterEventArgs> Filter;
+        public event EventHandler<FilterEventArgs>? Filter;
 
         public ControllerManager()
         {
@@ -65,7 +65,7 @@ namespace Simple.BotUtils.Controllers
             foreach (var method in methods)
             {
                 // do not bind "object" methods
-                if (method.DeclaringType.FullName == "System.Object") continue;
+                if (method.DeclaringType?.FullName == "System.Object") continue;
                 if (method.Name == "Equals") continue;
                 if (method.Name == "GetHashCode") continue;
                 if (method.Name == "GetType") continue;
@@ -259,13 +259,13 @@ namespace Simple.BotUtils.Controllers
 
             try
             {
-                object result = methodInfo.Invoke(instance, objParams);
+                var result = methodInfo.Invoke(instance, objParams);
 
                 if (methodInfo.ReturnType == typeof(Task))
                 {
-                    var task = (Task)result;
+                    var task = (Task?)result;
                     task?.Wait();
-                    return default;
+                    return default!;
                 }
                 else if (methodInfo.ReturnType.BaseType == typeof(Task) && methodInfo.ReturnType.IsGenericType)
                 {
@@ -273,18 +273,18 @@ namespace Simple.BotUtils.Controllers
 
                     if (generic == typeof(T))
                     {
-                        return ((Task<T>)result).Result;
+                        return ((Task<T>)result!).Result;
                     }
                     else
                     {
-                        var task = (Task)result;
+                        var task = (Task?)result;
                         task?.Wait();
-                        return default;
+                        return default!;
                     }
                 }
                 else
                 {
-                    return (T)result;
+                    return (T)result!;
                 }
             }
             catch (TargetInvocationException ex) { throw ex.InnerException ?? ex; }
@@ -319,7 +319,7 @@ namespace Simple.BotUtils.Controllers
                     var arrType = paramInfo[i].ParameterType.GetElementType();
                     if (arrType == typeof(string))
                     {
-                        string[] arr = new string[parameters.Length - pCount];
+                        var arr = new string?[parameters.Length - pCount];
                         //Array.Copy(parameters, pCount, arr, 0, arr.Length);
                         for (int j = 0; j < parameters.Length - pCount; j++)
                         {

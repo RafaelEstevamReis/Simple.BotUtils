@@ -7,7 +7,7 @@ namespace Simple.BotUtils.Terminal
 {
     public class SimpleMenu
     {
-        public string Caption { get; set; }
+        public string? Caption { get; set; }
         public List<string> Options { get; private set; }
         public SimpleMenu()
         {
@@ -46,7 +46,7 @@ namespace Simple.BotUtils.Terminal
             }
 
             Console.Write(">_ ");
-            string opt = Console.ReadLine();
+            var opt = Console.ReadLine();
 
             if(!int.TryParse(opt, out int value))
             {

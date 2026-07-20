@@ -108,7 +108,7 @@ public class Logger : ILogger
 
         foreach (var l in loggers) l.Warning(messageTemplate, propertyValues);
     }
-    public void Error(Exception exception, string messageTemplate, params object[] propertyValues)
+    public void Error(Exception? exception, string messageTemplate, params object[] propertyValues)
     {
         if (minLevel > LogEventLevel.Error) return;
 

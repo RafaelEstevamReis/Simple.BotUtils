@@ -41,10 +41,11 @@ public class LogToJsonLines : ILogger
         WriteToFile(CreateJsonLog(LogEventLevel.Error, messageTemplate, propertyValues));
     }
 
-    public void Error(Exception exception, string messageTemplate, params object[] propertyValues)
+    public void Error(Exception? exception, string messageTemplate, params object[] propertyValues)
     {
         var jsonLog = CreateJsonLog(LogEventLevel.Error, messageTemplate, propertyValues);
-        var logObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonLog);
+        var logObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonLog)
+            ?? throw new InvalidOperationException("Failed to deserialize log entry");
         logObject["Exception"] = BuildExceptionDetails(exception);
         WriteToFile(JsonConvert.SerializeObject(logObject, Formatting.None));
     }
@@ -83,8 +84,10 @@ public class LogToJsonLines : ILogger
         return JsonConvert.SerializeObject(logObject, Formatting.None);
     }
 
-    private Dictionary<string, object> BuildExceptionDetails(Exception exception)
+    private Dictionary<string, object> BuildExceptionDetails(Exception? exception)
     {
+        if (exception == null) return [];
+
         var details = new Dictionary<string, object>
         {
             { "Message", exception.Message },

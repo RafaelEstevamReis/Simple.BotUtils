@@ -17,11 +17,11 @@ public class BotBuilder : IDisposable
     private readonly Scheduler tasker;
     private readonly ControllerManager ctrl;
 
-    public event EventHandler<LoggerArguments> BotStartupLogEvents;
-    public event EventHandler<LoggerErrorArguments> BotEngineLogErrorEvents;
+    public event EventHandler<LoggerArguments>? BotStartupLogEvents;
+    public event EventHandler<LoggerErrorArguments>? BotEngineLogErrorEvents;
 
     public CancellationToken CancelationToken { get; }
-    public IConfigBase Config { get; private set; }
+    public IConfigBase? Config { get; private set; }
     public IDB[] DBs { get; private set; } = [];
     public IService[] Services { get; private set; } = [];
     public Scheduler Scheduler => tasker;
@@ -216,7 +216,7 @@ public class BotBuilder : IDisposable
 
         return this;
     }
-    public void CleanUp(Action action = null)
+    public void CleanUp(Action? action = null)
     {
         action?.Invoke();
         Dispose();
@@ -246,7 +246,7 @@ public class BotBuilder : IDisposable
 
         return true;
     }
-    private bool errorLog(Exception exception, string message, params object[] values)
+    private bool errorLog(Exception? exception, string message, params object[] values)
     {
         if (BotEngineLogErrorEvents == null) return false;
         BotEngineLogErrorEvents(this, new() { Exception = exception, MessageTemplate = message, Data = values });
@@ -264,14 +264,14 @@ public interface IService : IDisposable
 }
 public class LoggerArguments : EventArgs
 {
-    public string MessageTemplate { get; set; }
-    public object[] Data { get; set; }
+    public string MessageTemplate { get; set; } = string.Empty;
+    public object[] Data { get; set; } = [];
 }
 public class LoggerErrorArguments : EventArgs
 {
-    public Exception Exception { get; set; }
-    public string MessageTemplate { get; set; }
-    public object[] Data { get; set; }
+    public Exception? Exception { get; set; }
+    public string MessageTemplate { get; set; } = string.Empty;
+    public object[] Data { get; set; } = [];
 }
 
 #endif

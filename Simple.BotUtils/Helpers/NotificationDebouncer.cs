@@ -13,12 +13,12 @@ public class NotificationDebouncer<T>(IEqualityComparer<T>? comparer = null)
     private int hitCount = 0;
 
     public int MinBounces { get; set; } = 0;
-    public event EventHandler<NewValueEventArgs<T>> NewValue;
+    public event EventHandler<NewValueEventArgs<T>>? NewValue;
 
     public bool SetValue(T value)
     {
         // Is equal to current value?
-        if (comparer.Equals(value, currentValue))
+        if (comparer.Equals(value, currentValue!))
         {
             // Reset counters
             hitCount = 0;
@@ -26,7 +26,7 @@ public class NotificationDebouncer<T>(IEqualityComparer<T>? comparer = null)
             return false;
         }
 
-        if (!hasCandidate || !comparer.Equals(value, candidateValue))
+        if (!hasCandidate || !comparer.Equals(value, candidateValue!))
         {
             // New or Different value
             candidateValue = value;
@@ -41,7 +41,7 @@ public class NotificationDebouncer<T>(IEqualityComparer<T>? comparer = null)
         if (hitCount < MinBounces) return false;
 
         // Update new value
-        T oldValue = currentValue;
+        var oldValue = currentValue;
         currentValue = candidateValue;
         // Reset
         hasCandidate = false;
@@ -53,18 +53,18 @@ public class NotificationDebouncer<T>(IEqualityComparer<T>? comparer = null)
 }
 public class NewValueEventArgs<T> : EventArgs
 {
-    private NewValueEventArgs(T newValue, T oldValue, int bounces)
+    private NewValueEventArgs(T? newValue, T? oldValue, int bounces)
     {
         NewValue = newValue;
         OldValue = oldValue;
         Bounces = bounces;
     }
 
-    public T NewValue { get; }
-    public T OldValue { get; }
+    public T? NewValue { get; }
+    public T? OldValue { get; }
     public int Bounces { get; }
 
-    public static NewValueEventArgs<T> Create(T newValue, T oldValue, int bounces)
+    public static NewValueEventArgs<T> Create(T? newValue, T? oldValue, int bounces)
     {
         return new NewValueEventArgs<T>(newValue, oldValue, bounces);
     }

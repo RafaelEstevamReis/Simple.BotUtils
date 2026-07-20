@@ -54,11 +54,11 @@ public class LogToFile : ILogger
         write(LogEventLevel.Error, messageTemplate, propertyValues);
     }
 
-    public void Error(Exception exception, string messageTemplate, params object[] propertyValues)
+    public void Error(Exception? exception, string messageTemplate, params object[] propertyValues)
     {
         if (MinLevel > LogEventLevel.Error) return;
         var message = Logger.MessageBuider(LogEventLevel.Error, false, messageTemplate, propertyValues);
-        var fullMessage = $"{message}\nException: {exception.Message}\nStackTrace: {exception.StackTrace}";
+        var fullMessage = $"{message}\nException: {exception?.Message}\nStackTrace: {exception?.StackTrace}";
         WriteToFile(fullMessage);
     }
 
@@ -91,7 +91,7 @@ public class LogToFile : ILogger
                 _ => "",
             };
             var fileName = Path.GetFileNameWithoutExtension(_filePath) + append + Path.GetExtension(_filePath);
-            filePath = Path.Combine(Path.GetDirectoryName(_filePath), fileName);
+            filePath = Path.Combine(Path.GetDirectoryName(_filePath) ?? string.Empty, fileName);
         }
 
         lock (_lock)
