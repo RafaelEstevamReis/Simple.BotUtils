@@ -32,7 +32,7 @@ namespace Simple.BotUtils.Caching
             }
         }
 
-        private object currentValue;
+        private object? currentValue;
         private bool canBeUsed;
 
 
@@ -47,7 +47,7 @@ namespace Simple.BotUtils.Caching
 
         public bool Expired => ExpiresOn < DateTime.Now;
 
-        public object Retrieve()
+        public object? Retrieve()
         {
             LastAccess = DateTime.Now;
             return currentValue;
@@ -82,7 +82,7 @@ namespace Simple.BotUtils.Caching
             update(CreationOptions.UpdateCallback());
         }
 
-        private void update(object value)
+        private void update(object? value)
         {
             currentValue = value;
             LastUpdate = DateTime.Now;

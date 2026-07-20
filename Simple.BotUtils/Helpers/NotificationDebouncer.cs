@@ -3,27 +3,22 @@
 using System;
 using System.Collections.Generic;
 
-public class NotificationDebouncer<T>
+public class NotificationDebouncer<T>(IEqualityComparer<T>? comparer = null)
 {
-    private readonly IEqualityComparer<T> comparer;
+    private readonly IEqualityComparer<T> comparer = comparer ?? EqualityComparer<T>.Default;
 
-    private T currentValue;
-    private T candidateValue;
+    private T? currentValue;
+    private T? candidateValue;
     private bool hasCandidate;
     private int hitCount = 0;
 
     public int MinBounces { get; set; } = 0;
-    public event EventHandler<NewValueEventArgs<T>> NewValue;
-
-    public NotificationDebouncer(IEqualityComparer<T> comparer = null)
-    {
-        this.comparer = comparer ?? EqualityComparer<T>.Default;
-    }
+    public event EventHandler<NewValueEventArgs<T>>? NewValue;
 
     public bool SetValue(T value)
     {
         // Is equal to current value?
-        if (comparer.Equals(value, currentValue))
+        if (comparer.Equals(value, currentValue!))
         {
             // Reset counters
             hitCount = 0;
@@ -31,7 +26,7 @@ public class NotificationDebouncer<T>
             return false;
         }
 
-        if (!hasCandidate || !comparer.Equals(value, candidateValue))
+        if (!hasCandidate || !comparer.Equals(value, candidateValue!))
         {
             // New or Different value
             candidateValue = value;
@@ -46,7 +41,7 @@ public class NotificationDebouncer<T>
         if (hitCount < MinBounces) return false;
 
         // Update new value
-        T oldValue = currentValue;
+        var oldValue = currentValue;
         currentValue = candidateValue;
         // Reset
         hasCandidate = false;
@@ -58,18 +53,18 @@ public class NotificationDebouncer<T>
 }
 public class NewValueEventArgs<T> : EventArgs
 {
-    private NewValueEventArgs(T newValue, T oldValue, int bounces)
+    private NewValueEventArgs(T? newValue, T? oldValue, int bounces)
     {
         NewValue = newValue;
         OldValue = oldValue;
         Bounces = bounces;
     }
 
-    public T NewValue { get; }
-    public T OldValue { get; }
+    public T? NewValue { get; }
+    public T? OldValue { get; }
     public int Bounces { get; }
 
-    public static NewValueEventArgs<T> Create(T newValue, T oldValue, int bounces)
+    public static NewValueEventArgs<T> Create(T? newValue, T? oldValue, int bounces)
     {
         return new NewValueEventArgs<T>(newValue, oldValue, bounces);
     }

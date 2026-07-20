@@ -12,7 +12,7 @@ namespace Simple.BotUtils.Jobs
         private const int timeDelaySeconds = 10; // 10s
         readonly Dictionary<string, JobInfo> jobs;
 
-        public event EventHandler<TaskErrorEventArgs> Error;
+        public event EventHandler<TaskErrorEventArgs>? Error;
 
         public Scheduler()
         {
@@ -62,11 +62,7 @@ namespace Simple.BotUtils.Jobs
         }
         public Scheduler Add(Type t, IJob task)
         {
-            jobs[t.FullName] = new JobInfo()
-            {
-                SchedulerJob = task,
-                SystemTask = null
-            };
+            jobs[t.FullName ?? string.Empty] = new JobInfo(task, null, DateTime.MinValue);
             return this;
         }
 
@@ -120,11 +116,11 @@ namespace Simple.BotUtils.Jobs
         }
 
         public bool RunJob<T>(object parameter)
-            => RunJob<T>(parameter, out string _);
-        public bool RunJob<T>(object parameter, out string failedReason)
+            => RunJob<T>(parameter, out _);
+        public bool RunJob<T>(object parameter, out string? failedReason)
         {
             var t = typeof(T);
-            if (!jobs.TryGetValue(t.FullName, out JobInfo info))
+            if (!jobs.TryGetValue(t.FullName ?? string.Empty, out var info))
             {
                 failedReason = "Type not present";
                 return false;
@@ -133,8 +129,8 @@ namespace Simple.BotUtils.Jobs
             return RunJob(info, parameter, out failedReason);
         }
         public bool RunJob(JobInfo info, object parameter)
-            => RunJob(info, parameter, out string _);
-        public bool RunJob(JobInfo info, object parameter, out string failedReason)
+            => RunJob(info, parameter, out _);
+        public bool RunJob(JobInfo info, object parameter, out string? failedReason)
         {
             if (!info.CanRun)
             {
@@ -160,7 +156,7 @@ namespace Simple.BotUtils.Jobs
             return true;
         }
 
-        private void runJob(JobInfo info, ExecutionTrigger trigger, object parameter)
+        private void runJob(JobInfo info, ExecutionTrigger trigger, object? parameter)
         {
             var task = info.SchedulerJob.ExecuteAsync(trigger, parameter);
             info.LastExecution = DateTime.Now;
@@ -228,17 +224,12 @@ namespace Simple.BotUtils.Jobs
             }
         }
 
-        public JobInfo GetJobInfo<T>()
+        public JobInfo? GetJobInfo<T>()
         {
             var t = typeof(T);
-            if (!jobs.TryGetValue(t.FullName, out JobInfo info)) return null;
+            if (!jobs.TryGetValue(t.FullName ?? string.Empty, out var info)) return null;
             // Make a copy
-            return new JobInfo()
-            {
-                LastExecution = info.LastExecution,
-                SchedulerJob = info.SchedulerJob,
-                SystemTask = info.SystemTask
-            };
+            return new JobInfo(info.SchedulerJob, info.SystemTask, info.LastExecution);
         }
     }
 }

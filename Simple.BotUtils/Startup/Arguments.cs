@@ -7,16 +7,16 @@ namespace Simple.BotUtils.Startup
     {
         public bool Has(string key) => ContainsKey(key);
 
-        public string Get(string key)
+        public string? Get(string key)
         {
-            if (TryGetValue(key, out string val)) return val;
+            if (TryGetValue(key, out var val)) return val;
             return null;
         }
 
 #if !NETSTANDARD1_0
         public NameValueCollection ToNameValue()
         {
-            NameValueCollection nvc = new NameValueCollection();
+            NameValueCollection nvc = [];
             foreach (var pair in this)
             {
                 nvc[pair.Key] = pair.Value;

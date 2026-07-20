@@ -26,7 +26,7 @@ namespace Simple.BotUtils.Caching
             items[key] = new CacheItem(options);
         }
 
-        public bool TryGet(string key, out object value)
+        public bool TryGet(string key, out object? value)
         {
             doMaintenance();
 
@@ -45,24 +45,24 @@ namespace Simple.BotUtils.Caching
             value = item.Retrieve();
             return true;
         }
-        public bool TryGet<T>(string key, out T value)
+        public bool TryGet<T>(string key, out T? value)
         {
             value = default;
-            if (!TryGet(key, out object obj)) return false;
+            if (!TryGet(key, out var obj)) return false;
 
-            value = (T)obj;
+            value = (T)obj!;
             return true;
         }
 
         public T Get<T>(string key)
         {
-            if (!TryGet<T>(key, out T value)) throw new Exception("Cache expired");
-            return value;
+            if (!TryGet<T>(key, out var value)) throw new Exception("Cache expired");
+            return value!;
         }
         public object Get(string key)
         {
-            if (!TryGet(key, out object value)) throw new Exception("Cache expired");
-            return value;
+            if (!TryGet(key, out var value)) throw new Exception("Cache expired");
+            return value!;
         }
 
         public object GetOrAdd(string key, CacheOptions options)

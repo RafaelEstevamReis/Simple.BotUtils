@@ -6,7 +6,7 @@ namespace Simple.BotUtils.Data
 {
     public abstract class ConfigBase : IConfigBase
     {
-        public string FilePath { get; set; }
+        public string FilePath { get; set; } = string.Empty;
         public string LogPath { get; set; } = "eventlog.log";
 
         protected static T Load<T>(string filePath)
@@ -16,7 +16,7 @@ namespace Simple.BotUtils.Data
             where T : IConfigBase
         {
             var fi = new FileInfo(filePath);
-            if (!fi.Directory.Exists) fi.Directory.Create();
+            if (fi.Directory != null && !fi.Directory.Exists) fi.Directory.Create();
 
             if (fi.Extension.Equals(".xml", StringComparison.InvariantCultureIgnoreCase))
             {
@@ -37,7 +37,7 @@ namespace Simple.BotUtils.Data
             where T : IConfigBase
         {
             var obj = JsonSerializer.LoadOrCreate(filePath, template);
-            if(obj != null) obj.FilePath = filePath;
+            obj.FilePath = filePath;
             return obj;
         }
 

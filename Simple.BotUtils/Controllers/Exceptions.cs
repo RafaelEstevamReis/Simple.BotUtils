@@ -42,7 +42,7 @@ namespace Simple.BotUtils.Controllers
     public class FilteredException : Exception
     {
         public string Method { get; }
-        public FilterException BlockReason { get; }
+        public FilterException? BlockReason { get; }
         public Attribute[] Attributes { get; }
         public object[] Args { get; }
 

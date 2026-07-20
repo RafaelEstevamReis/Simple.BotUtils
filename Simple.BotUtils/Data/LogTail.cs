@@ -13,7 +13,7 @@ namespace Simple.BotUtils.Data
         public static string[] LastLines(string fileName, int count)
         {
             using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            if (fs.Length == 0) return null;
+            if (fs.Length == 0) return [];
 
             string[] arr = new string[count];
 
@@ -54,7 +54,7 @@ namespace Simple.BotUtils.Data
             if (line > 0)
             {
                 int diff = count - line;
-                if (diff <= 0) return new string[0];
+                if (diff <= 0) return [];
 
                 var arrTrim = new string[diff];
                 Array.Copy(arr, line, arrTrim, 0, diff);
