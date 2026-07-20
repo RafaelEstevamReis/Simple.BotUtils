@@ -62,10 +62,14 @@ namespace Simple.BotUtils.Jobs
         }
         public Scheduler Add(Type t, IJob task)
         {
-            jobs[t.FullName] = new JobInfo()
+            jobs[t.FullName ?? string.Empty] = new JobInfo()
             {
                 SchedulerJob = task,
-                SystemTask = null
+#if NETSTANDARD1_0
+                SystemTask = Task.Run(() => { })
+#else
+                SystemTask = Task.CompletedTask
+#endif
             };
             return this;
         }
@@ -124,7 +128,7 @@ namespace Simple.BotUtils.Jobs
         public bool RunJob<T>(object parameter, out string failedReason)
         {
             var t = typeof(T);
-            if (!jobs.TryGetValue(t.FullName, out JobInfo info))
+            if (!jobs.TryGetValue(t.FullName ?? string.Empty, out var info))
             {
                 failedReason = "Type not present";
                 return false;
@@ -228,10 +232,10 @@ namespace Simple.BotUtils.Jobs
             }
         }
 
-        public JobInfo GetJobInfo<T>()
+        public JobInfo? GetJobInfo<T>()
         {
             var t = typeof(T);
-            if (!jobs.TryGetValue(t.FullName, out JobInfo info)) return null;
+            if (!jobs.TryGetValue(t.FullName ?? string.Empty, out var info)) return null;
             // Make a copy
             return new JobInfo()
             {

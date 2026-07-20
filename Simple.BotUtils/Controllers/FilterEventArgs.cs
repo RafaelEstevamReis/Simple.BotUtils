@@ -5,19 +5,17 @@ namespace Simple.BotUtils.Controllers
 {
     public class FilterEventArgs : EventArgs
     {
-        public string Method { get; set; }
-        public object[] Args { get; set; }
-        public Attribute[] Attrbiutes { get;  set; }
-        public FilterException BlockReason { get; set; }
+        public string Method { get; set; } = string.Empty;
+        public object[] Args { get; set; } = [];
+        public Attribute[] Attrbiutes { get; set; } = [];
+        public FilterException? BlockReason { get; set; }
 
-        public T GetArg<T>()
+        public T? GetArg<T>()
         {
-            if (Args == null) return default;
-            
-            if(GetArg(out T t)) return t;
+            if(GetArg(out T? t)) return t;
             return default;
         }
-        public bool GetArg<T>(out T t)
+        public bool GetArg<T>(out T? t)
         {
             t = default;
             if (Args == null) return false;
@@ -34,7 +32,7 @@ namespace Simple.BotUtils.Controllers
             return false;
         }
 
-        public T GetAttribute<T>()
+        public T? GetAttribute<T>()
             where T : Attribute
         {
             if (Attrbiutes == null) return null;

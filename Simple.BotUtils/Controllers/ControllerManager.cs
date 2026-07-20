@@ -287,7 +287,7 @@ namespace Simple.BotUtils.Controllers
                     return (T)result;
                 }
             }
-            catch (TargetInvocationException ex) { throw ex.InnerException; }
+            catch (TargetInvocationException ex) { throw ex.InnerException ?? ex; }
             catch (AggregateException ex)
             {
                 if (ex.InnerExceptions.Count == 1) throw ex.InnerExceptions[0];
@@ -383,7 +383,7 @@ namespace Simple.BotUtils.Controllers
                 else
                 {
                     throw new InvalidMethodParameterTypeException($"Invalid conversion, see details",
-                                                                  paramInfo[i].Name,
+                                                                  paramInfo[i].Name ?? string.Empty,
                                                                   paramInfo[i].ParameterType,
                                                                   parameters[i].GetType());
                 }

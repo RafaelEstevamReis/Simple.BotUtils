@@ -12,7 +12,7 @@ namespace Simple.BotUtils.Helpers
         /// <summary>
         /// Returns all class-types assinable from T in the assembly
         /// </summary>
-        public static IEnumerable<Type> GetClassesOfType<T>(Assembly source, Func<Type, bool> filter = null)
+        public static IEnumerable<Type> GetClassesOfType<T>(Assembly source, Func<Type, bool>? filter = null)
         {
             var interfaceType = typeof(T);
             var types = source.GetTypes()
@@ -31,14 +31,14 @@ namespace Simple.BotUtils.Helpers
         /// </summary>
         public static IEnumerable<T> CreateInstancesFor<T>(IEnumerable<Type> types)
         {
-            return types.Select(t => (T)Activator.CreateInstance(t));
+            return types.Select(t => (T)(Activator.CreateInstance(t) ?? throw new InvalidOperationException($"Could not create instance for: {typeof(T)}")));
         }
         /// <summary>
         /// Create T instances from provided types
         /// </summary>
         public static IEnumerable<T> CreateInstancesFor<T>(IEnumerable<Type> types, params object[] args)
         {
-            return types.Select(t => (T)Activator.CreateInstance(t, args));
+            return types.Select(t => (T)(Activator.CreateInstance(t, args) ?? throw new InvalidOperationException($"Could not create instance for: {typeof(T)}")));
         }
     }
 }

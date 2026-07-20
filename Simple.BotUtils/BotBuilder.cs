@@ -137,7 +137,8 @@ public class BotBuilder : IDisposable
     }
     public BotBuilder Setup4SchedulerWithEntryAssemblyJobs()
     {
-        return _setup4Scheduler(() => tasker.AddAssemblyJobs(Assembly.GetEntryAssembly()));
+        var entryAssembly = Assembly.GetEntryAssembly() ?? throw new InvalidOperationException("Entry assembly cannot be null");
+        return _setup4Scheduler(() => tasker.AddAssemblyJobs(entryAssembly));
     }
     private BotBuilder _setup4Scheduler(Action addJobs)
     {
