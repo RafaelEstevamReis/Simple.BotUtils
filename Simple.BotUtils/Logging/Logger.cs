@@ -42,8 +42,7 @@ public class Logger : ILogger
     }
     private static string FormatMessage(string messageTemplate, object[] propertyValues)
     {
-        if (string.IsNullOrEmpty(messageTemplate))
-            return string.Empty;
+        if (string.IsNullOrEmpty(messageTemplate)) return string.Empty;
 
         string result = messageTemplate;
         var placeholders = regex.Matches(messageTemplate);
@@ -60,21 +59,35 @@ public class Logger : ILogger
             object value = propertyValues[i];
 
             string formattedValue;
-            if (propertyName.StartsWith('@') && value != null)
-            {
-                formattedValue = value.GetType().IsPrimitive || value is string
-                    ? value.ToString()
-                    : $"[{value.GetType().Name}] {Newtonsoft.Json.JsonConvert.SerializeObject(value)}";
-            }
-            else
-            {
-                formattedValue = value?.ToString() ?? "null";
-            }
+            formattedValue = processFormattedValue(propertyName, value);
 
             result = result.Replace(placeholder, formattedValue);
         }
 
         return result;
+    }
+
+    private static string processFormattedValue(string propertyName, object value)
+    {
+        if (propertyName.StartsWith('@') && value != null)
+        {
+            if (value is string sVal)
+            {
+                return sVal;
+            }
+
+            var valueType = value.GetType();
+            if (valueType.IsPrimitive)
+            {
+                return value.ToString() ?? string.Empty;
+            }
+            else
+            {
+                return $"[{valueType.Name ?? ""}] {Newtonsoft.Json.JsonConvert.SerializeObject(value)}";
+            }
+        }
+
+        return value?.ToString() ?? "null";
     }
 
     public void Debug(string messageTemplate, params object[] propertyValues)

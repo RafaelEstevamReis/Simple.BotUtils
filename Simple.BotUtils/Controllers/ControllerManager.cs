@@ -396,14 +396,9 @@ namespace Simple.BotUtils.Controllers
 
         public class EndpointInfo
         {
-            public EndpointInfo()
-            {
-                Methods = new List<MethodInfo>();
-            }
-
-            public string Name { get; set; }
-            public Type ControllerType { get; set; }
-            public List<MethodInfo> Methods { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public Type ControllerType { get; set; } = default!;
+            public List<MethodInfo> Methods { get; set; } = [];
 
             public override string ToString() => $"{Name} [{ControllerType.Name}] Methods: {Methods.Count}";
         }

@@ -3,19 +3,16 @@
 using System;
 using System.Collections.Generic;
 
-public class GenericComparer<T> : IEqualityComparer<T>
+public class GenericComparer<T>(Func<T, T, bool> equalsFunc, Func<T, int>? hashFunc = null) : IEqualityComparer<T>
 {
-    private readonly Func<T, T, bool> equalsFunc;
-    private readonly Func<T, int> hashFunc;
+    private readonly Func<T, T, bool> equalsFunc = equalsFunc ?? throw new ArgumentNullException(nameof(equalsFunc));
+    private readonly Func<T, int> hashFunc = hashFunc ?? (obj => obj?.GetHashCode() ?? 0);
 
-    public GenericComparer(Func<T, T, bool> equalsFunc, Func<T, int> hashFunc = null)
+    public bool Equals(T? x, T? y)
     {
-        this.equalsFunc = equalsFunc ?? throw new ArgumentNullException(nameof(equalsFunc));
-        this.hashFunc = hashFunc ?? (obj => obj?.GetHashCode() ?? 0);
-    }
+        if (x == null && y == null) return true;
+        if (x == null || y == null) return false;
 
-    public bool Equals(T x, T y)
-    {
         return equalsFunc(x, y);
     }
 

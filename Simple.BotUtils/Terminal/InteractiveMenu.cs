@@ -48,12 +48,12 @@ namespace Simple.BotUtils.Terminal
         public int MaxVisibleOptions { get; set; } = 0;
 
         /// <summary>Optional title drawn above the options</summary>
-        public string Caption { get; set; }
+        public string Caption { get; set; } = string.Empty;
         /// <summary>The menu options, in registration order</summary>
         public List<MenuOption> Options { get; private set; } = [];
 
         // Effective hotkey per option index, resolved while the menu is being shown
-        private ConsoleKey?[] hotKeys;
+        private ConsoleKey?[] hotKeys = [];
 
         /// <summary>Sets <see cref="ClearBgColor"/> and returns this menu for chaining</summary>
         public InteractiveMenu SetClearBgColor(ConsoleColor color)
@@ -427,15 +427,15 @@ namespace Simple.BotUtils.Terminal
             /// <summary>Text shown for this option</summary>
             public string Text { get; set; } = string.Empty;
             /// <summary>Optional secondary text drawn dimmed after <see cref="Text"/></summary>
-            public string Description { get; set; }
+            public string? Description { get; set; }
             /// <summary>Explicit hotkey; when null the option may auto-receive a digit 1..9</summary>
             public ConsoleKey? HotKey { get; set; }
             /// <summary>Whether the option can be selected. Disabled options are skipped and dimmed</summary>
             public bool Enabled { get; set; } = true;
             /// <summary>Action invoked by <see cref="InteractiveMenu.Run"/> when this option is chosen</summary>
-            public Action Action { get; set; }
+            public Action? Action { get; set; }
             /// <summary>Arbitrary user data associated with this option</summary>
-            public object Tag { get; set; }
+            public object? Tag { get; set; }
         }
 
     }
