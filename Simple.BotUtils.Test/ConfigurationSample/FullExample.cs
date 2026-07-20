@@ -13,7 +13,7 @@ namespace ConfigurationSample
             Console.WriteLine("Hello World!");
 
             // Create fake args
-            args = new string[] { "-a", "nothing", "-n", "da-bot", "--MyLongNumber", "684261", "--MyNegativeNumber", "\"-123456\"" };
+            args = ["-a", "nothing", "-n", "da-bot", "--MyLongNumber", "684261", "--MyNegativeNumber", "\"-123456\""];
 
             // load my config from Disk
             //var cfg = MyConfig.Load("cfg.xml");

@@ -1,44 +1,21 @@
-﻿using Simple.BotUtils;
+﻿using Simple.BotUtils.Terminal;
+using System;
 
-var menu = new Simple.BotUtils.Terminal
-    .SimpleMenu()
+var menu = new InteractiveMenu()
     .SetCaption("Choose the sample")
-    .AddOption("Configuration Example")
-    .AddOption("Controller Example")
-    .AddOption("Schedule Example")
-    .AddOption("Interactive Menu Example")
-    .AddOption("Controller with Authorization Example")
-    .AddOption("BotBuilder")
+    .AddOption("Configuration Example", ConfigurationSample.FullExample.ProgramMain, args)
+    .AddOption("Controller Example", ControllerSample.FullExample.ProgramMain, args)
+    .AddOption("Schedule Example", ScheduleSample.FullExample.ProgramMain,args)
+    .AddOption("Interactive Menu Example", TerminalSamples.InteractiveMenuExample.ProgramMain,args)
+    .AddOption("Controller with Authorization Example", ControllerSample.AuthorizedControllers.ProgramMain, args)
+    .AddOption("BotBuilder", BotBuilderSample.FullExample.ProgramMain, args)
     ;
 
-var opt = menu.ShowMenu(true);
+var chosen = menu.Show();
+if (chosen == null) return;
 
-System.Console.Clear();
-System.Console.WriteLine("## " + menu.Options[opt] + " ##");
-System.Console.WriteLine();
+Console.Clear();
+Console.WriteLine("## " + chosen.Text + " ##");
+Console.WriteLine();
 
-switch (opt)
-{
-    case 0:
-        ConfigurationSample.FullExample.ProgramMain(args);
-        break;
-    case 1:
-        ControllerSample.FullExample.ProgramMain(args);
-        break;
-    case 2:
-        ScheduleSample.FullExample.ProgramMain(args);
-        break;
-
-    case 3:
-        TerminalSamples.InteractiveMenuExample.ProgramMain(args);
-        break;
-
-    case 4:
-        ControllerSample.AuthorizedControllers.ProgramMain(args);
-        break;
-
-    case 5:
-        BotBuilderSample.FullExample.ProgramMain(args);
-        break;
-}
-
+chosen.Action?.Invoke();

@@ -22,10 +22,11 @@ namespace ControllerSample
             }
             catch (FilteredException ex)
             {
-
+                Console.WriteLine($"FilteredException: {ex}");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Exception: {ex}");
             }
         }
 
