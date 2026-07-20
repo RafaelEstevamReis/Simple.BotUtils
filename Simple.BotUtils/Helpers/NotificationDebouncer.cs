@@ -3,22 +3,17 @@
 using System;
 using System.Collections.Generic;
 
-public class NotificationDebouncer<T>
+public class NotificationDebouncer<T>(IEqualityComparer<T>? comparer = null)
 {
-    private readonly IEqualityComparer<T> comparer;
+    private readonly IEqualityComparer<T> comparer = comparer ?? EqualityComparer<T>.Default;
 
-    private T currentValue;
-    private T candidateValue;
+    private T? currentValue;
+    private T? candidateValue;
     private bool hasCandidate;
     private int hitCount = 0;
 
     public int MinBounces { get; set; } = 0;
     public event EventHandler<NewValueEventArgs<T>> NewValue;
-
-    public NotificationDebouncer(IEqualityComparer<T> comparer = null)
-    {
-        this.comparer = comparer ?? EqualityComparer<T>.Default;
-    }
 
     public bool SetValue(T value)
     {

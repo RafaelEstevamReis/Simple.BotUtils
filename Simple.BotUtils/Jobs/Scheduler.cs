@@ -62,15 +62,7 @@ namespace Simple.BotUtils.Jobs
         }
         public Scheduler Add(Type t, IJob task)
         {
-            jobs[t.FullName ?? string.Empty] = new JobInfo()
-            {
-                SchedulerJob = task,
-#if NETSTANDARD1_0
-                SystemTask = Task.Run(() => { })
-#else
-                SystemTask = Task.CompletedTask
-#endif
-            };
+            jobs[t.FullName ?? string.Empty] = new JobInfo(task, null, DateTime.MinValue);
             return this;
         }
 
@@ -237,12 +229,7 @@ namespace Simple.BotUtils.Jobs
             var t = typeof(T);
             if (!jobs.TryGetValue(t.FullName ?? string.Empty, out var info)) return null;
             // Make a copy
-            return new JobInfo()
-            {
-                LastExecution = info.LastExecution,
-                SchedulerJob = info.SchedulerJob,
-                SystemTask = info.SystemTask
-            };
+            return new JobInfo(info.SchedulerJob, info.SystemTask, info.LastExecution);
         }
     }
 }

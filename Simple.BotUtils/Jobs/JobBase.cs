@@ -5,7 +5,7 @@ namespace Simple.BotUtils.Jobs
 {
     public abstract class JobBase : IJob
     {
-        protected JobBase() { RunAction = null; }
+        protected JobBase() { RunAction = (t, o) => { }; }
         protected JobBase(Action<ExecutionTrigger, object> runAction)
         {
             RunAction = runAction;

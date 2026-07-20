@@ -22,7 +22,7 @@ namespace Simple.BotUtils.Data
             value = default;
             if (!File.Exists(fileName)) return false;
 
-            using FileStream fs = new FileStream(fileName, FileMode.Open);
+            using var fs = new FileStream(fileName, FileMode.Open);
             value = Load<T>(fs);
             return true;
         }
