@@ -1,4 +1,5 @@
-﻿namespace Simple.BotUtils.DI;
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Simple.BotUtils.UnitTests")]
+namespace Simple.BotUtils.DI;
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ public class Injector
     public static void AddSingleton(Type t, object instance) => Add(t, instance, null, InjectionType.Singleton);
     public static void AddSingleton<T>(T instance) => Add(typeof(T), instance, null, InjectionType.Singleton);
     public static void AddTransient(Type t, Func<object> constructor) => Add(t, null, constructor, InjectionType.Transient);
-    public static void AddTransient<T>(Func<T> constructor) => Add(typeof(T), null, () => constructor, InjectionType.Transient);
+    public static void AddTransient<T>(Func<T> constructor) => Add(typeof(T), null, () => constructor()!, InjectionType.Transient);
     public static void Add(Type t, object? instance, Func<object>? transientConstructor, InjectionType injectionType)
     {
         dicTypes[t] = new InjectedObject()
@@ -39,5 +40,13 @@ public class Injector
         }
 
         throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Unit testing only
+    /// </summary>
+    internal static void Reset()
+    {
+        dicTypes.Clear();
     }
 }
