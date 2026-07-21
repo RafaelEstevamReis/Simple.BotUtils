@@ -1,9 +1,8 @@
-﻿namespace Simple.BotUtils.Caching
+﻿namespace Simple.BotUtils.Caching;
+
+public enum ExpirationPolicy
 {
-    public enum ExpirationPolicy
-    {
-        DoNotRenew,
-        LastUpdate,
-        LastAccess,
-    }
+    DoNotRenew,
+    LastUpdate,
+    LastAccess,
 }

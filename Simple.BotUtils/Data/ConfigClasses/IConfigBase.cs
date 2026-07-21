@@ -1,11 +1,9 @@
 ﻿#if !NETSTANDARD1_0
+namespace Simple.BotUtils.Data;
 
-namespace Simple.BotUtils.Data
+public interface IConfigBase
 {
-    public interface IConfigBase
-    {
-        string FilePath { get; set; }
-    }
-
+    string FilePath { get; set; }
 }
+
 #endif

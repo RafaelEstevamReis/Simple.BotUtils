@@ -1,60 +1,60 @@
 ﻿#if !NETSTANDARD1_0
+namespace Simple.BotUtils.Data;
+
 using System;
 using System.IO;
 
-namespace Simple.BotUtils.Data
+public abstract class ConfigBase : IConfigBase
 {
-    public abstract class ConfigBase : IConfigBase
+    public string FilePath { get; set; } = string.Empty;
+    public string LogPath { get; set; } = "eventlog.log";
+
+    protected static T Load<T>(string filePath)
+          where T : IConfigBase, new()
+        => Load(filePath, new T());
+    protected static T Load<T>(string filePath, T template)
+        where T : IConfigBase
     {
-        public string FilePath { get; set; } = string.Empty;
-        public string LogPath { get; set; } = "eventlog.log";
+        var fi = new FileInfo(filePath);
+        if (fi.Directory != null && !fi.Directory.Exists) fi.Directory.Create();
 
-        protected static T Load<T>(string filePath)
-              where T : IConfigBase, new()
-            => Load(filePath, new T());
-        protected static T Load<T>(string filePath, T template)
-            where T : IConfigBase
+        if (fi.Extension.Equals(".xml", StringComparison.InvariantCultureIgnoreCase))
         {
-            var fi = new FileInfo(filePath);
-            if (fi.Directory != null && !fi.Directory.Exists) fi.Directory.Create();
-
-            if (fi.Extension.Equals(".xml", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return LoadXml(filePath, template);
-            }
-            else if (fi.Extension.Equals(".json", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return LoadJson(filePath, template);
-            }
-            else throw new NotSupportedException($"Extension '{fi.Extension}' not supported. Supported extensions: '*.xml', '*.json'");
+            return LoadXml(filePath, template);
         }
-
-        #region Json
-        protected static T LoadJson<T>(string filePath)
-              where T : IConfigBase, new()
-            => LoadJson(filePath, new T());
-        protected static T LoadJson<T>(string filePath, T template)
-            where T : IConfigBase
+        else if (fi.Extension.Equals(".json", StringComparison.InvariantCultureIgnoreCase))
         {
-            var obj = JsonSerializer.LoadOrCreate(filePath, template);
-            obj.FilePath = filePath;
-            return obj;
+            return LoadJson(filePath, template);
         }
-
-        #endregion
-
-        #region XML
-        protected static T LoadXml<T>(string FilePath)
-            where T : IConfigBase, new()
-            => LoadXml(FilePath, new T());
-        protected static T LoadXml<T>(string filePath, T template)
-            where T : IConfigBase
-        {
-            var obj = XmlSerializer.LoadOrCreate(filePath, template);
-            obj.FilePath = filePath;
-            return obj;
-        }
-        #endregion
+        else throw new NotSupportedException($"Extension '{fi.Extension}' not supported. Supported extensions: '*.xml', '*.json'");
     }
+
+    #region Json
+    protected static T LoadJson<T>(string filePath)
+          where T : IConfigBase, new()
+        => LoadJson(filePath, new T());
+    protected static T LoadJson<T>(string filePath, T template)
+        where T : IConfigBase
+    {
+        var obj = JsonSerializer.LoadOrCreate(filePath, template);
+        obj.FilePath = filePath;
+        return obj;
+    }
+
+    #endregion
+
+    #region XML
+    protected static T LoadXml<T>(string FilePath)
+        where T : IConfigBase, new()
+        => LoadXml(FilePath, new T());
+    protected static T LoadXml<T>(string filePath, T template)
+        where T : IConfigBase
+    {
+        var obj = XmlSerializer.LoadOrCreate(filePath, template);
+        obj.FilePath = filePath;
+        return obj;
+    }
+    #endregion
 }
+
 #endif

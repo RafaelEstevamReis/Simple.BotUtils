@@ -1,8 +1,7 @@
-﻿namespace Simple.BotUtils.DI
+﻿namespace Simple.BotUtils.DI;
+
+public enum InjectionType
 {
-    public enum InjectionType
-    {
-        Singleton,
-        Transient,
-    }
+    Singleton,
+    Transient,
 }

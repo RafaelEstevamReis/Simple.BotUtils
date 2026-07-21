@@ -1,6 +1,5 @@
-﻿namespace Simple.BotUtils.Controllers
+﻿namespace Simple.BotUtils.Controllers;
+
+public interface IController
 {
-    public interface IController
-    {
-    }
 }

@@ -1,11 +1,10 @@
-﻿using System;
+﻿namespace Simple.BotUtils.DI;
 
-namespace Simple.BotUtils.DI
+using System;
+
+internal class InjectedObject
 {
-    internal class InjectedObject
-    {
-        public Func<object>? Constructor { get; set; }
-        public object? Instance { get; set; }
-        public InjectionType InjectionType { get; set; }
-    }
+    public Func<object>? Constructor { get; set; }
+    public object? Instance { get; set; }
+    public InjectionType InjectionType { get; set; }
 }

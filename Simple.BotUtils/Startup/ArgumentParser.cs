@@ -1,123 +1,123 @@
-﻿using System;
+﻿namespace Simple.BotUtils.Startup;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Simple.BotUtils.Startup
+public class ArgumentParser
 {
-    public class ArgumentParser
+    public static string[] ArgumentSplit(string args)
+        => quotedSplit(args).ToArray();
+    private static IEnumerable<string> quotedSplit(string original)
     {
-        public static string[] ArgumentSplit(string args)
-            => quotedSplit(args).ToArray();
-        private static IEnumerable<string> quotedSplit(string original)
+        var sb = new StringBuilder();
+
+        bool quoted = false;
+        for (int i = 0; i < original.Length; i++)
         {
-            StringBuilder sb = new StringBuilder();
-
-            bool quoted = false;
-            for (int i = 0; i < original.Length; i++)
+            if (original[i] == '"')
             {
-                if (original[i] == '"')
-                {
-                    quoted = !quoted;
-                    continue;
-                }
-
-                if (!quoted && char.IsWhiteSpace(original[i]))
-                {
-                    yield return sb.ToString();
-                    sb.Clear();
-                    continue;
-                }
-
-                sb.Append(original[i]);
+                quoted = !quoted;
+                continue;
             }
 
-            if(sb.Length > 0) yield return sb.ToString();
-        }
-
-        public static Arguments Parse(string[] args)
-        {
-            var collection = new Arguments();
-
-            string last = "";
-            for (int i = 0; i < args.Length; i++)
+            if (!quoted && char.IsWhiteSpace(original[i]))
             {
-                if (args[i].StartsWith("-"))
-                {
-                    string key = args[i];
-                    last = key;
-                    collection.Add(key, "");
-                }
-                else
-                {
-                    string val = args[i];
-                    if (val.Length > 2)
-                    {
-                        bool boxed = false;
-                        if (val.StartsWith('"') && val.EndsWith('"')) boxed = true;
-                        if (val.StartsWith('\'') && val.EndsWith('\'')) boxed = true;
-                        if (val.StartsWith('`') && val.EndsWith('`')) boxed = true;
-
-                        if (boxed) val = val.Substring(1, val.Length - 2);
-                    }
-
-                    collection[last] = val;
-                    last = "";
-                }
+                yield return sb.ToString();
+                sb.Clear();
+                continue;
             }
 
-            return collection;
+            sb.Append(original[i]);
         }
+
+        if(sb.Length > 0) yield return sb.ToString();
+    }
+
+    public static Arguments Parse(string[] args)
+    {
+        var collection = new Arguments();
+
+        string last = "";
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i].StartsWith("-"))
+            {
+                string key = args[i];
+                last = key;
+                collection.Add(key, "");
+            }
+            else
+            {
+                string val = args[i];
+                if (val.Length > 2)
+                {
+                    bool boxed = false;
+                    if (val.StartsWith('"') && val.EndsWith('"')) boxed = true;
+                    if (val.StartsWith('\'') && val.EndsWith('\'')) boxed = true;
+                    if (val.StartsWith('`') && val.EndsWith('`')) boxed = true;
+
+                    if (boxed) val = val.Substring(1, val.Length - 2);
+                }
+
+                collection[last] = val;
+                last = "";
+            }
+        }
+
+        return collection;
+    }
 
 #if !NETSTANDARD1_0
 
-        public static T ParseAs<T>(string[] args)
-            where T : new() => ParseInto<T>(args, new T());
+    public static T ParseAs<T>(string[] args)
+        where T : new() => ParseInto<T>(args, new T());
 
-        public static T ParseInto<T>(string[] args, T template)
-            where T : new() => MapTo<T>(Parse(args), template);
+    public static T ParseInto<T>(string[] args, T template)
+        where T : new() => MapTo<T>(Parse(args), template);
 
-        public static T MapTo<T>(Arguments arguments, T obj)
-            where T : new()
+    public static T MapTo<T>(Arguments arguments, T obj)
+        where T : new()
+    {
+        obj ??= new T();
+
+        var type = typeof(T);
+        foreach (var prop in type.GetProperties())
         {
-            if (obj == null) obj = new T();
+            if (!prop.CanRead) continue;
+            if (!prop.CanWrite) continue;
+            // same name
+            var nameOptions = new string[] { $"--{prop.Name}" };
 
-            var type = typeof(T);
-            foreach (var prop in type.GetProperties())
+            // ArgumentKey Attributes
+            var attrArgKeys = prop.GetCustomAttributes(false)
+                                 .OfType<ArgumentKeyAttribute>();
+            // Search
+            var allKeys = attrArgKeys.SelectMany(o => o.Keys)
+                                     .Union(nameOptions);
+            foreach (var k in allKeys)
             {
-                if (!prop.CanRead) continue;
-                if (!prop.CanWrite) continue;
-                // same name
-                var nameOptions = new string[] { $"--{prop.Name}" };
-
-                // ArgumentKey Attributes
-                var attrArgKeys = prop.GetCustomAttributes(false)
-                                     .OfType<ArgumentKeyAttribute>();
-                // Search
-                var allKeys = attrArgKeys.SelectMany(o => o.Keys)
-                                         .Union(nameOptions);
-                foreach (var k in allKeys)
+                if (arguments.Has(k))
                 {
-                    if (arguments.Has(k))
-                    {
-                        setPropValue(prop, arguments[k], obj);
-                        break;
-                    }
+                    setPropValue(prop, arguments[k], obj);
+                    break;
                 }
             }
-            return obj;
         }
-        private static void setPropValue<T>(System.Reflection.PropertyInfo prop, string value, T obj)
+        return obj;
+    }
+    private static void setPropValue<T>(System.Reflection.PropertyInfo prop, string value, T obj)
+    {
+        object oValue = value;
+        // Not string? try to convert
+        if (prop.PropertyType != typeof(string))
         {
-            object oValue = value;
-            // Not string? try to convert
-            if (prop.PropertyType != typeof(string))
-            {
-                oValue = Convert.ChangeType(oValue, prop.PropertyType);
-            }
-            prop.SetValue(obj, oValue, index: null);
+            oValue = Convert.ChangeType(oValue, prop.PropertyType);
         }
+        prop.SetValue(obj, oValue, index: null);
+    }
+
 #endif
 
-    }
 }

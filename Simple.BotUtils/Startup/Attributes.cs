@@ -1,13 +1,9 @@
-﻿using System;
+﻿namespace Simple.BotUtils.Startup;
 
-namespace Simple.BotUtils.Startup
+using System;
+
+[AttributeUsage(AttributeTargets.Property)]
+public class ArgumentKeyAttribute(params string[] keys) : Attribute
 {
-    public class ArgumentKeyAttribute : Attribute
-    {
-        public string[] Keys { get; }
-        public ArgumentKeyAttribute(params string[] keys)
-        {
-            Keys = keys;
-        }
-    }
+    public string[] Keys { get; } = keys;
 }

@@ -1,9 +1,8 @@
-﻿namespace Simple.BotUtils.Jobs
+﻿namespace Simple.BotUtils.Jobs;
+
+public enum ExecutionTrigger
 {
-    public enum ExecutionTrigger
-    {
-        Invoked,
-        Scheduled,
-        Startup,
-    }
+    Invoked,
+    Scheduled,
+    Startup,
 }
