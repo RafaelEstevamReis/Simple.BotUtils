@@ -2,11 +2,15 @@
 namespace Simple.BotUtils.DI;
 
 using System;
-using System.Collections.Generic;
 
 public class Injector
 {
-    static readonly Dictionary<Type, InjectedObject> dicTypes = [];
+
+#if NETSTANDARD1_0
+    static readonly System.Collections.Generic.Dictionary<Type, InjectedObject> dicTypes = [];
+#else
+    static readonly System.Collections.Concurrent.ConcurrentDictionary<Type, InjectedObject> dicTypes = [];
+#endif
 
     public static void AddSingleton(Type t, object instance) => Add(t, instance, null, InjectionType.Singleton);
     public static void AddSingleton<T>(T instance) => Add(typeof(T), instance, null, InjectionType.Singleton);

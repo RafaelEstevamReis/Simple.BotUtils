@@ -96,7 +96,7 @@ public class BotBuilder : IDisposable
 
     public BotBuilder Setup3DB(Func<BotBuilder, IEnumerable<IDB>> dbBuilders)
     {
-        DBs = dbBuilders(this).ToArray();
+        DBs = [.. dbBuilders(this)];
         // Startup all in parallel
         var allTasks = DBs.Select(o => Task.Run(() =>
         {
